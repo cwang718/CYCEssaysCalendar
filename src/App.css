@@ -2,13 +2,35 @@ button {
   font-size: 25px;
 }
 
-div {
-  background-color: #2c2c2c;
+.eventsButtonCon {
+  padding: 25px;
+  display: flex;
+}
+
+.bottomCon {
+  width: '100%';
+  height: 50px;
+  justify-content: 'center';
+  align-items: 'center';
+  position: 'absolute';
+  bottom: 0;
 }
 
 .code {
   font-size: 25px;
   padding: 10px;
+}
+
+.desc {
+  font-size: 20px;
+}
+
+.eventCard {
+  padding: 20px;
+}
+
+.eventTitle {
+  font-size: 30px;
 }
 
 .header {
@@ -22,9 +44,12 @@ div {
 }
 
 .headerText {
-  color: white;
   font-size: 30px;
   padding-top: 40px;
+}
+
+.label, .time {
+  font-size: 25px;
 }
 
 .logo {
@@ -40,7 +65,6 @@ div {
 }
 
 .loginButton {
-  color: #2C2C2C;
   background-color: #4A9BE4;
   border: none;
   padding: 10px;
@@ -51,16 +75,32 @@ div {
 
 .loginButtonCon {
   padding: 25px;
-  padding-bottom: 300px;
+}
+
+.loginButtonPageCon {
+  padding: 25px;
+}
+
+.pageTitle {
+  font-size: 30px;
+  padding-bottom: 30px;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 20px;
+  padding-left: 20%;
+  padding-right: 20%;
+  align-items: center;
 }
 
 .subtitle {
-  color: white;
   padding: 25px;
 }
 
 .title {
-  color: white;
   font-size: 30px;
   font-weight: bold;
 }

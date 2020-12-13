@@ -3,6 +3,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import EventsPage from "./pages/EventsPage";
+import AddEventPage from "./pages/AddEventPage";
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
           </Route>
 
           <Route exact path="/addevent">
-
+            <AddEventPage />
           </Route>
 
           <Route exact path="/">
