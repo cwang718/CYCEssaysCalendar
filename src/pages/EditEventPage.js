@@ -8,11 +8,8 @@ import '../App.css';
 export default function EditEventPage() {
     const { event_id } = useParams();
     const history = useHistory();
-    // console.log(event_id);
 
     let oldArr = event_id.split("_");
-    console.log("oldArr");
-    console.log(oldArr);
         
     let oldStartTime = oldArr[4].split(":");
     let oldStartMin = oldStartTime[1].slice(0,-2);
@@ -51,16 +48,47 @@ export default function EditEventPage() {
     const [price, setPrice] = useState("");
     const [popOpen, setPopOpen] = useState(false);
     const regex = /^\d+(.\d{1,2})?$/;
+    const [deleted, setDeleted] = useState(false);
 
-    useEffect(() => {
-        fireDb.ref("events/" + event_id)
-              .on("value", function(snapshot) {
-                console.log("hi");
-                console.log(snapshot.val());
-              }, function (errorObject) {
-                console.log("The read failed: " + errorObject.code);
-              });                                    
-    }, [selectedDesc, event_id])
+    useEffect(() => {  
+        if(deleted){
+            fireDb.ref("events/" + event_id)
+                .on("value", function(snapshot) {
+                    let oldData = snapshot.val();
+                    console.log("oldData in EditPage:", oldData);
+
+                    let oldStartHr = (oldData.startHour>12 ? (parseInt(oldData.startHour) - 12) : parseInt(oldData.startHour));
+                    let oldStartDon = (oldData.startHour>12 ? "PM" : "AM");
+
+                    let oldEndHr = (oldData.endHour>12 ? (parseInt(oldData.endHour) - 12) : parseInt(oldData.endHour));
+                    let oldEndDon = (oldData.endHour>12 ? "PM" : "AM");
+
+                    setSelectedName(oldData.name);
+                    
+                    setSelectedStartMonth(oldData.startMonth);
+                    setSelectedStartDay(oldData.startDay);
+                    setSelectedStartYear(oldData.startYear);
+                    setSelectedStartHour(oldStartHr);
+                    setSelectedStartMin(oldData.startMin);
+                    setSelectedStartDoN(oldStartDon);
+
+                    setSelectedEndMonth(oldData.endMonth);
+                    setSelectedEndDay(oldData.endDay);
+                    setSelectedEndYear(oldData.endYear);
+                    setSelectedEndHour(oldEndHr);
+                    setSelectedEndMin(oldData.endMin);
+                    setSelectedEndDoN(oldEndDon);
+
+                    setSelectedVacancy(oldData.vac);
+
+                    setSelectedColor(oldData.color);
+
+                    setSelectedDesc(oldData.desc);
+                }, function (errorObject) {
+                    console.log("Realtime DB read failed: " + errorObject.code);
+                });
+        }                            
+    }, [event_id, deleted])
 
     const handlePriceChange = (e) => {
         let typedPrice = e.target.value;
@@ -71,9 +99,6 @@ export default function EditEventPage() {
     const handleEditEvent = (e) => {
         let startHr = selectedStartDoN==="AM" ? parseInt(selectedStartHour) : (parseInt(selectedStartHour) + 12);
         let endHr = selectedEndDoN==="AM" ? parseInt(selectedEndHour) : (parseInt(selectedEndHour) + 12);
-
-        fireDb.ref("/events/" + event_id).remove();
-        console.log("handleEditEvent submit: ", event_id);
 
         let key = selectedName + "_" + 
                 (parseInt(selectedStartMonth)) + "_" + 
@@ -117,7 +142,10 @@ export default function EditEventPage() {
           })
           .then(() => console.log('Editted event added.'));
 
+          setDeleted(true);
+          fireDb.ref("/events/" + event_id).remove();
           history.push("/eventdetails");
+          
     };
 
     return (

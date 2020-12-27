@@ -22,7 +22,7 @@ export default function EventsPage() {
                 });
             setEvents(temp);
         } catch (err) {console.log("Failed to retrieve events: " + err)}
-    }, []);
+    }, [deleted]);
     
 
     function hexc(colorval) {
@@ -37,27 +37,23 @@ export default function EventsPage() {
     }
 
     const editHandler = (e) => {
-        console.log("inside edit handler");
         let parent = e.target.parentElement.parentElement.children;
 
         let name = parent[0].innerHTML;
 
         let startMonth = parseInt(parent[1].children[1].childNodes[0].data) - 1;
-        let startDay = parent[1].children[1].childNodes[2].data;
-        let startYr = parent[1].children[1].childNodes[4].data;
+        let startDay = parseInt(parent[1].children[1].childNodes[2].data);
+        let startYr = parseInt(parent[1].children[1].childNodes[4].data);
         let startHr = parseInt(parent[1].children[1].childNodes[6].data);
-        let startMin = parent[1].children[1].childNodes[8].data;
+        let startMin = parseInt(parent[1].children[1].childNodes[8].data);
         let startDon = parent[1].children[1].childNodes[10].data;
 
         let endMonth = parseInt(parent[2].children[1].childNodes[0].data) - 1;
-        let endDay = parent[2].children[1].childNodes[2].data;
-        let endYr = parent[2].children[1].childNodes[4].data;
+        let endDay = parseInt(parent[2].children[1].childNodes[2].data);
+        let endYr = parseInt(parent[2].children[1].childNodes[4].data);
         let endHr = parseInt(parent[1].children[1].childNodes[6].data);
-        let endMin = parent[2].children[1].childNodes[8].data;
+        let endMin = parseInt(parent[2].children[1].childNodes[8].data);
         let endDon = parent[2].children[1].childNodes[10].data;
-
-        console.log("startMonth", parent[1].children[1].childNodes[0]);
-        console.log("endMonth", endMonth);
 
         let desc = parent[3].childNodes[1].data;
 
@@ -80,30 +76,27 @@ export default function EventsPage() {
                 cardColor + "_" + 
                 desc;
         key = key.replaceAll(".", "").replaceAll("#", "").replaceAll("$", "").replaceAll("[", "").replaceAll("]", "");
-        console.log(key);
-        console.log("EventsPage: ", startMonth, endMonth);
 
         history.push("/editevent/" + key);
     }
 
     const deleteHandler = (e) => {
-        console.log("inside delete hanadler");
         let parent = e.target.parentElement.parentElement.children;
 
         let name = parent[0].innerHTML;
 
         let startMonth = parseInt(parent[1].children[1].childNodes[0].data) - 1;
-        let startDay = parent[1].children[1].childNodes[2].data;
-        let startYr = parent[1].children[1].childNodes[4].data;
+        let startDay = parseInt(parent[1].children[1].childNodes[2].data);
+        let startYr = parseInt(parent[1].children[1].childNodes[4].data);
         let startHr = parseInt(parent[1].children[1].childNodes[6].data);
-        let startMin = parent[1].children[1].childNodes[8].data;
+        let startMin = parseInt(parent[1].children[1].childNodes[8].data);
         let startDon = parent[1].children[1].childNodes[10].data;
 
         let endMonth = parseInt(parent[2].children[1].childNodes[0].data) - 1;
-        let endDay = parent[2].children[1].childNodes[2].data;
-        let endYr = parent[2].children[1].childNodes[4].data;
+        let endDay = parseInt(parent[2].children[1].childNodes[2].data);
+        let endYr = parseInt(parent[2].children[1].childNodes[4].data);
         let endHr = parseInt(parent[1].children[1].childNodes[6].data);
-        let endMin = parent[2].children[1].childNodes[8].data;
+        let endMin = parseInt(parent[2].children[1].childNodes[8].data);
         let endDon = parent[2].children[1].childNodes[10].data;
 
         let desc = parent[3].childNodes[1].data;
@@ -127,7 +120,7 @@ export default function EventsPage() {
                 cardColor + "_" + 
                 desc;
         key = key.replaceAll(".", "").replaceAll("#", "").replaceAll("$", "").replaceAll("[", "").replaceAll("]", "");
-        console.log(key);
+        
         fireDb.ref("/events/" + key).remove();
         setDeleted(!deleted);
     }
