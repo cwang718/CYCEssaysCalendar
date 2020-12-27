@@ -1,3 +1,9 @@
+.App {
+  background-color: #97b4d1;
+  font-family: 'Ibarra Real Nova, serif';
+  color: #21243b;
+}
+
 button {
   font-size: 25px;
 }
@@ -103,4 +109,12 @@ button {
 .title {
   font-size: 30px;
   font-weight: bold;
+}
+
+.tooltip-arrow {
+  top: 0;
+  left: 50%;
+  margin-left: -5px;
+  border-bottom-color: #000000; /* black */
+  border-width: 0 5px 5px;
 }

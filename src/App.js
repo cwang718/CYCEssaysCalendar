@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import EventsPage from "./pages/EventsPage";
 import AddEventPage from "./pages/AddEventPage";
+import EditEventPage from "./pages/EditEventPage";
 
 function App() {
   return (
@@ -17,6 +18,10 @@ function App() {
 
           <Route exact path="/addevent">
             <AddEventPage />
+          </Route>
+
+          <Route exact path="/editevent/:event_id">
+            <EditEventPage />
           </Route>
 
           <Route exact path="/">

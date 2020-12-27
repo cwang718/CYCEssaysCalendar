@@ -1,48 +1,66 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useHistory, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import { fireDb } from "../Firebase/config";
 import { Tooltip } from 'reactstrap';
 import '../App.css';
 
-export default function AddEventPage() {
-    let curStr = new Date().toLocaleString();
-    let curArr = curStr.split(",");
-    let curDate = curArr[0].split("/");
-    let curTime = curArr[1].replace(/\s+/g, '').split(":");
-    let curDoN = curTime[2].substring(2,4);
+export default function EditEventPage() {
+    const { event_id } = useParams();
+    const history = useHistory();
+    // console.log(event_id);
 
-    let years = [parseInt(curDate[2]) - 1, parseInt(curDate[2]), 
-                 parseInt(curDate[2]) + 1, parseInt(curDate[2]) + 2,
-                 parseInt(curDate[2]) + 3, parseInt(curDate[2]) + 4];
+    let oldArr = event_id.split("_");
+    console.log("oldArr");
+    console.log(oldArr);
+        
+    let oldStartTime = oldArr[4].split(":");
+    let oldStartMin = oldStartTime[1].slice(0,-2);
+    let oldStartDon = oldStartTime[1].slice(-2);
 
-    const [selectedName, setSelectedName] = useState("");
+    let oldEndTime = oldArr[8].split(":");
+    let oldEndMin = oldEndTime[1].slice(0,-2);
+    let oldEndDon = oldEndTime[1].slice(-2);
 
-    let curMonth = parseInt(curDate[0]) - 1;
+    const [selectedName, setSelectedName] = useState(oldArr[0]);
 
-    const [selectedStartMonth, setSelectedStartMonth] = useState(curMonth);
-    const [selectedStartDay, setSelectedStartDay] = useState(curDate[1]);
-    const [selectedStartYear, setSelectedStartYear] = useState(curDate[2]);
-    const [selectedStartHour, setSelectedStartHour] = useState(curTime[0]);
-    const [selectedStartMin, setSelectedStartMin] = useState(curTime[1]);
-    const [selectedStartDoN, setSelectedStartDoN] = useState(curDoN);
-    
-    const [selectedEndMonth, setSelectedEndMonth] = useState(curMonth);
-    const [selectedEndDay, setSelectedEndDay] = useState(curDate[1]);
-    const [selectedEndYear, setSelectedEndYear] = useState(curDate[2]);
-    const [selectedEndHour, setSelectedEndHour] = useState(curTime[0]);
-    const [selectedEndMin, setSelectedEndMin] = useState(curTime[1]);
-    const [selectedEndDoN, setSelectedEndDoN] = useState(curDoN);
+    const [selectedStartMonth, setSelectedStartMonth] = useState(oldArr[1]);
+    const [selectedStartDay, setSelectedStartDay] = useState(oldArr[2]);
+    const [selectedStartYear, setSelectedStartYear] = useState(oldArr[3]);
+    const [selectedStartHour, setSelectedStartHour] = useState(oldStartTime[0]);
+    const [selectedStartMin, setSelectedStartMin] = useState(oldStartMin);
+    const [selectedStartDoN, setSelectedStartDoN] = useState(oldStartDon);
 
-    const [selectedVacancy, setSelectedVacancy] = useState("NOT FULL");
+    const [selectedEndMonth, setSelectedEndMonth] = useState(oldArr[5]);
+    const [selectedEndDay, setSelectedEndDay] = useState(oldArr[6]);
+    const [selectedEndYear, setSelectedEndYear] = useState(oldArr[7]);
+    const [selectedEndHour, setSelectedEndHour] = useState(oldEndTime[0]);
+    const [selectedEndMin, setSelectedEndMin] = useState(oldEndMin);
+    const [selectedEndDoN, setSelectedEndDoN] = useState(oldEndDon);
 
-    const [selectedColor, setSelectedColor] = useState("5987E7");
+    let years = [parseInt(oldArr[3]) - 1, parseInt(oldArr[3]), 
+                 parseInt(oldArr[3]) + 1, parseInt(oldArr[3]) + 2,
+                 parseInt(oldArr[3]) + 3, parseInt(oldArr[3]) + 4];
 
-    const [selectedDesc, setSelectedDesc] = useState("");
+    const [selectedVacancy, setSelectedVacancy] = useState(oldArr[9]);
+
+    const [selectedColor, setSelectedColor] = useState(oldArr[10]);
+
+    const [selectedDesc, setSelectedDesc] = useState(oldArr[11]);
 
     const [price, setPrice] = useState("");
     const [popOpen, setPopOpen] = useState(false);
     const regex = /^\d+(.\d{1,2})?$/;
+
+    useEffect(() => {
+        fireDb.ref("events/" + event_id)
+              .on("value", function(snapshot) {
+                console.log("hi");
+                console.log(snapshot.val());
+              }, function (errorObject) {
+                console.log("The read failed: " + errorObject.code);
+              });                                    
+    }, [selectedDesc, event_id])
 
     const handlePriceChange = (e) => {
         let typedPrice = e.target.value;
@@ -50,12 +68,15 @@ export default function AddEventPage() {
         setPopOpen(!regex.test(typedPrice));
     }
 
-    const handleNewEvent = (e) => {
+    const handleEditEvent = (e) => {
         let startHr = selectedStartDoN==="AM" ? parseInt(selectedStartHour) : (parseInt(selectedStartHour) + 12);
         let endHr = selectedEndDoN==="AM" ? parseInt(selectedEndHour) : (parseInt(selectedEndHour) + 12);
 
+        fireDb.ref("/events/" + event_id).remove();
+        console.log("handleEditEvent submit: ", event_id);
+
         let key = selectedName + "_" + 
-                selectedStartMonth + "_" + 
+                (parseInt(selectedStartMonth)) + "_" + 
                 selectedStartDay + "_" + 
                 selectedStartYear + "_" + 
                 selectedStartHour + ":" + 
@@ -64,7 +85,7 @@ export default function AddEventPage() {
                 selectedEndDay + "_" + 
                 selectedEndYear + "_" + 
                 selectedEndHour + ":" + 
-                selectedEndMin + selectedEndDoN +"_" +
+                selectedEndMin + selectedEndDoN + "_" +
                 selectedVacancy + "_" + 
                 selectedColor + "_" + 
                 selectedDesc;
@@ -94,7 +115,9 @@ export default function AddEventPage() {
 
             price: price,
           })
-          .then(() => console.log('Event added.'));
+          .then(() => console.log('Editted event added.'));
+
+          history.push("/eventdetails");
     };
 
     return (
@@ -118,7 +141,7 @@ export default function AddEventPage() {
                     <form>
                         <select 
                             className="time" 
-                            defaultValue={parseInt(curDate[0]) - 1}
+                            defaultValue={selectedStartMonth}
                             onChange={(input) => setSelectedStartMonth(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={0}>Jan</option>
@@ -138,7 +161,7 @@ export default function AddEventPage() {
                     <form>
                         <select 
                             className="time" 
-                            defaultValue={curDate[1]} 
+                            defaultValue={selectedStartDay} 
                             onChange={(input) => setSelectedStartDay(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={1}>1</option>
@@ -178,7 +201,7 @@ export default function AddEventPage() {
                     <form>
                         <select 
                             className="time" 
-                            defaultValue={parseInt(curDate[2])} 
+                            defaultValue={selectedStartYear} 
                             onChange={(input) => setSelectedStartYear(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={years[0]}>{years[0]}</option>
@@ -193,7 +216,7 @@ export default function AddEventPage() {
                     <form>
                     <select 
                             className="time" 
-                            defaultValue={curTime[0]}
+                            defaultValue={selectedStartHour}
                             onChange={(input) => setSelectedStartHour(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={1}>1</option>
@@ -214,7 +237,7 @@ export default function AddEventPage() {
                     <form>
                         <select 
                             className="time" 
-                            defaultValue={curTime[1]}
+                            defaultValue={selectedStartMin}
                             onChange={(input) => setSelectedStartMin(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={0}>00</option>
@@ -282,7 +305,7 @@ export default function AddEventPage() {
                     <form>
                         <select 
                             className="time" 
-                            defaultValue={curDoN}
+                            defaultValue={selectedStartDoN}
                             onChange={(input) => setSelectedStartDoN(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value="AM">AM</option>
@@ -296,7 +319,7 @@ export default function AddEventPage() {
                     <form>
                         <select 
                             className="time" 
-                            defaultValue={parseInt(curDate[0]) - 1}
+                            defaultValue={selectedEndMonth}
                             onChange={(input) => setSelectedEndMonth(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={0}>Jan</option>
@@ -316,7 +339,7 @@ export default function AddEventPage() {
                     <form>
                         <select 
                             className="time" 
-                            defaultValue={curDate[1]} 
+                            defaultValue={selectedEndDay} 
                             onChange={(input) => setSelectedEndDay(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={1}>1</option>
@@ -356,7 +379,7 @@ export default function AddEventPage() {
                     <form>
                         <select 
                             className="time" 
-                            defaultValue={parseInt(curDate[2])} 
+                            defaultValue={selectedEndYear} 
                             onChange={(input) => setSelectedEndYear(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={years[0]}>{years[0]}</option>
@@ -371,7 +394,7 @@ export default function AddEventPage() {
                     <form>
                         <select 
                             className="time" 
-                            defaultValue={curTime[0]}
+                            defaultValue={selectedEndHour}
                             onChange={(input) => setSelectedEndHour(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={1}>1</option>
@@ -392,7 +415,7 @@ export default function AddEventPage() {
                     <form>
                         <select 
                             className="time" 
-                            defaultValue={curTime[1]}
+                            defaultValue={selectedEndMin}
                             onChange={(input) => setSelectedEndMin(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={0}>00</option>
@@ -460,7 +483,7 @@ export default function AddEventPage() {
                     <form>
                         <select 
                             className="time" 
-                            defaultValue={curDoN}
+                            defaultValue={selectedEndDoN}
                             onChange={(input) => setSelectedEndDoN(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value="AM">AM</option>
@@ -488,7 +511,7 @@ export default function AddEventPage() {
                     <form>
                         <select 
                             className="time" 
-                            defaultValue="5987E7"
+                            defaultValue={selectedColor}
                             onChange={(input) => setSelectedColor(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value="5987E7">Blue (default)</option>
@@ -506,6 +529,7 @@ export default function AddEventPage() {
                         className="desc" 
                         rows="5" 
                         cols="40"
+                        defaultValue={selectedDesc}
                         onChange={(input) => setSelectedDesc(input.target.value)}
                         style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                     </textarea>
@@ -538,9 +562,9 @@ export default function AddEventPage() {
                 <Link to="eventdetails">
                     <button 
                         className="loginButton" 
-                        onClick={handleNewEvent} 
+                        onClick={handleEditEvent} 
                         style={{ backgroundColor: `#${selectedColor}` }}>
-                        Add Event
+                        Submit Editted Event
                     </button>
                 </Link>
             </div>

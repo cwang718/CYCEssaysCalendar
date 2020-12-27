@@ -1,10 +1,13 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useHistory } from "react-router-dom";
 import Header from "../components/Header";
 import { fireDb } from "../Firebase/config";
 import '../App.css';
 
 export default function EventsPage() {
+    const history = useHistory();
+    const [deleted, setDeleted] = useState(false);
+
     let events = [];
     fireDb
       .ref("/events")
@@ -14,25 +17,153 @@ export default function EventsPage() {
           });
       });
 
+    function hexc(colorval) {
+        let parts = colorval.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+        delete(parts[0]);
+        for (var i = 1; i <= 3; ++i) {
+          parts[i] = parseInt(parts[i]).toString(16);
+          if (parts[i].length === 1) parts[i] = '0' + parts[i];
+        }
+        let color = parts.join('');
+        return color;
+    }
+
+    const editHandler = (e) => {
+        console.log("inside edit handler");
+        let parent = e.target.parentElement.parentElement.children;
+
+        let name = parent[0].innerHTML;
+
+        let startMonth = parseInt(parent[1].children[1].childNodes[0].data) - 1;
+        let startDay = parent[1].children[1].childNodes[2].data;
+        let startYr = parent[1].children[1].childNodes[4].data;
+        let startHr = parseInt(parent[1].children[1].childNodes[6].data);
+        let startMin = parent[1].children[1].childNodes[8].data;
+        let startDon = parent[1].children[1].childNodes[10].data;
+
+        let endMonth = parseInt(parent[2].children[1].childNodes[0].data) - 1;
+        let endDay = parent[2].children[1].childNodes[2].data;
+        let endYr = parent[2].children[1].childNodes[4].data;
+        let endHr = parseInt(parent[1].children[1].childNodes[6].data);
+        let endMin = parent[2].children[1].childNodes[8].data;
+        let endDon = parent[2].children[1].childNodes[10].data;
+
+        console.log("startMonth", parent[1].children[1].childNodes[0]);
+        console.log("endMonth", endMonth);
+
+        let desc = parent[3].childNodes[1].data;
+
+        let vac = parent[5].children[0].innerHTML;
+
+        let cardColor = hexc(e.target.parentElement.parentElement.style.backgroundColor).toUpperCase();
+
+        let key = name + "_" + 
+                startMonth + "_" + 
+                startDay + "_" + 
+                startYr + "_" + 
+                startHr + ":" + 
+                startMin + startDon + "_" +
+                endMonth + "_" + 
+                endDay + "_" + 
+                endYr + "_" + 
+                endHr + ":" + 
+                endMin + endDon + "_" +
+                vac + "_" + 
+                cardColor + "_" + 
+                desc;
+        key = key.replaceAll(".", "").replaceAll("#", "").replaceAll("$", "").replaceAll("[", "").replaceAll("]", "");
+        console.log(key);
+        console.log("EventsPage: ", startMonth, endMonth);
+
+        history.push("/editevent/" + key);
+    }
+
+    const deleteHandler = (e) => {
+        console.log("inside delete hanadler");
+        let parent = e.target.parentElement.parentElement.children;
+
+        let name = parent[0].innerHTML;
+
+        let startMonth = parseInt(parent[1].children[1].childNodes[0].data) - 1;
+        let startDay = parent[1].children[1].childNodes[2].data;
+        let startYr = parent[1].children[1].childNodes[4].data;
+        let startHr = parseInt(parent[1].children[1].childNodes[6].data);
+        let startMin = parent[1].children[1].childNodes[8].data;
+        let startDon = parent[1].children[1].childNodes[10].data;
+
+        let endMonth = parseInt(parent[2].children[1].childNodes[0].data) - 1;
+        let endDay = parent[2].children[1].childNodes[2].data;
+        let endYr = parent[2].children[1].childNodes[4].data;
+        let endHr = parseInt(parent[1].children[1].childNodes[6].data);
+        let endMin = parent[2].children[1].childNodes[8].data;
+        let endDon = parent[2].children[1].childNodes[10].data;
+
+        let desc = parent[3].childNodes[1].data;
+
+        let vac = parent[5].children[0].innerHTML;
+
+        let cardColor = hexc(e.target.parentElement.parentElement.style.backgroundColor).toUpperCase();
+
+        let key = name + "_" + 
+                startMonth + "_" + 
+                startDay + "_" + 
+                startYr + "_" + 
+                startHr + ":" + 
+                startMin + startDon + "_" +
+                endMonth + "_" + 
+                endDay + "_" + 
+                endYr + "_" + 
+                endHr + ":" + 
+                endMin + endDon + "_" +
+                vac + "_" + 
+                cardColor + "_" + 
+                desc;
+        key = key.replaceAll(".", "").replaceAll("#", "").replaceAll("$", "").replaceAll("[", "").replaceAll("]", "");
+        console.log(key);
+        fireDb.ref("/events/" + key).remove();
+        setDeleted(!deleted);
+    }
+
     return (
         <div className="login">
             <Header></Header>
             <div className="pageTitle">Event Details</div>
             <div className="eventsCon">
                 {events.map(event => (
-                    <div className="eventCard" 
-                         key={event.startMonth + event.startDay + event.startYear + event.startHour + event.startMin + event.endMonth + event.endDay + event.endYear + event.endHour + event.endMin}
-                         style={{backgroundColor: `#${event.color}`}}>
-                        <div className="eventTitle">{event.name}</div>
-                        <div className="eventTime">Start time: {event.startMonth + 1}/{event.startDay}/{event.startYear} at {event.startHour}{event.startMin}</div>
-                        <div className="eventTime">End time: {event.endMonth + 1}/{event.endDay}/{event.endYear} at {event.endHour}{event.endMin}</div>
-                        <div className="eventDesc">Description: {event.desc}</div>
+                    <div 
+                        style={{ paddingBottom:'25px' }}
+                        key={event.title + event.startMonth + event.startDay + event.startYear + event.startHour + event.startMin + event.endMonth + event.endDay + event.endYear + event.endHour + event.endMin + event.vac + event.color + event.desc}>
+                        <div className="eventCard" 
+                            style={{backgroundColor: `#${event.color}`, width:'60%', borderRadius: 15, marginLeft: 'auto', marginRight: 'auto', }}>
+                            <div className="eventTitle">{event.name}</div>
+                            <div className="eventStartTime">{console.log("in html: ", event.startMonth, event.endMonth )}
+                                <em>Start time:</em> <span className="eventStartDet">{parseInt(event.startMonth) + 1}/{event.startDay}/{event.startYear} at {event.startHour>12 ? event.startHour - 12 : event.startHour}:{event.startMin} {event.startHour>12 ? "PM" : "AM"}</span>
+                            </div>
+                            <div className="eventEndTime"><em>End time:</em> <span>{parseInt(event.endMonth) + 1}/{event.endDay}/{event.endYear} at {event.endHour>12 ? event.endHour - 12 : event.endHour}:{event.endMin} {event.endHour>12 ? "PM" : "AM"}</span>
+                            </div>
+                            <div className="eventDesc"><em>Description: </em>{event.desc}</div>
+                            <div className="eventPrice"><em>Price: </em>{event.price ? ("$" + event.price) : "N/A"}</div>
+                            {event.vac==="FULL" ? (<div className="eventVac" style={{ padding: 10, color: '#e66060' }}><strong>{event.vac}</strong></div>) : (<div className="eventVac" style={{ padding: 10 }}><strong>{event.vac}</strong></div>)}
+                            <div style={{ display: 'flex', justifyContent:'space-between' }}>
+                                <button
+                                    onClick={editHandler} 
+                                    style={{ paddingLeft: '3%', paddingRight: '3%', paddingTop: '2%', paddingBottom: '2%', borderRadius: 30, border: 'none', backgroundColor: '#fcebb1' }}
+                                    >
+                                    Edit
+                                </button>
+                                <button 
+                                    style={{ paddingLeft: '3%', paddingRight: '3%', paddingTop: '2%', paddingBottom: '2%', borderRadius: 30, border: 'none', backgroundColor: '#fcb1b1' }}
+                                    onClick={deleteHandler}>
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 ))}
             </div>
-            <div className="eventsButtonCon">
+            <div className="eventsButtonCon" style={{ display: 'flex', justifyContent: 'center',  }}>
                 <Link to="addevent">
-                    <button className="loginButton">Add Event</button>
+                    <button className="loginButton" style={{ backgroundColor: '#a3e3aa', }}>Add Event</button>
                 </Link>
             </div>
         </div>
