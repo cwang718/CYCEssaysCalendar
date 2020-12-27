@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import Header from "../components/Header";
 import { fireDb } from "../Firebase/config";
@@ -7,15 +7,23 @@ import '../App.css';
 export default function EventsPage() {
     const history = useHistory();
     const [deleted, setDeleted] = useState(false);
+    const [events, setEvents] = useState([]);
 
-    let events = [];
-    fireDb
-      .ref("/events")
-      .on("value", (snapshot) => {
-          snapshot.forEach((snap) => {
-              events.push(snap.val());
-          });
-      });
+    let temp = [];
+
+    useEffect(() => {
+        try{
+            fireDb
+                .ref("/events")
+                .on("value", (snapshot) => {
+                    snapshot.forEach((snap) => {
+                        temp.push(snap.val());
+                    });
+                });
+            setEvents(temp);
+        } catch (err) {console.log("Failed to retrieve events: " + err)}
+    }, []);
+    
 
     function hexc(colorval) {
         let parts = colorval.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
@@ -136,10 +144,10 @@ export default function EventsPage() {
                         <div className="eventCard" 
                             style={{backgroundColor: `#${event.color}`, width:'60%', borderRadius: 15, marginLeft: 'auto', marginRight: 'auto', }}>
                             <div className="eventTitle">{event.name}</div>
-                            <div className="eventStartTime">{console.log("in html: ", event.startMonth, event.endMonth )}
-                                <em>Start time:</em> <span className="eventStartDet">{parseInt(event.startMonth) + 1}/{event.startDay}/{event.startYear} at {event.startHour>12 ? event.startHour - 12 : event.startHour}:{event.startMin} {event.startHour>12 ? "PM" : "AM"}</span>
+                            <div className="eventStartTime">
+                                <em>Start time:</em> <span className="eventStartDet">{parseInt(event.startMonth) + 1}/{event.startDay}/{event.startYear} at {event.startHour>12 ? event.startHour - 12 : event.startHour}:{event.startMin<10 ? ("0" + event.startMin) : event.startMin} {event.startHour>12 ? "PM" : "AM"}</span>
                             </div>
-                            <div className="eventEndTime"><em>End time:</em> <span>{parseInt(event.endMonth) + 1}/{event.endDay}/{event.endYear} at {event.endHour>12 ? event.endHour - 12 : event.endHour}:{event.endMin} {event.endHour>12 ? "PM" : "AM"}</span>
+                            <div className="eventEndTime"><em>End time:</em> <span>{parseInt(event.endMonth) + 1}/{event.endDay}/{event.endYear} at {event.endHour>12 ? event.endHour - 12 : event.endHour}:{event.endMin<10 ? ("0" + event.endMin) : event.endMin}  {event.endHour>12 ? "PM" : "AM"}</span>
                             </div>
                             <div className="eventDesc"><em>Description: </em>{event.desc}</div>
                             <div className="eventPrice"><em>Price: </em>{event.price ? ("$" + event.price) : "N/A"}</div>

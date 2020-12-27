@@ -95,17 +95,17 @@ export default function EditEventPage() {
               .set({
             name: selectedName,
     
-            startMonth: selectedStartMonth,
-            startDay: selectedStartDay,
-            startYear: selectedStartYear,
-            startHour: startHr,
-            startMin: selectedStartMin,
+            startMonth: parseInt(selectedStartMonth),
+            startDay: parseInt(selectedStartDay),
+            startYear: parseInt(selectedStartYear),
+            startHour: parseInt(startHr),
+            startMin: parseInt(selectedStartMin),
       
-            endMonth: selectedEndMonth,
+            endMonth: parseInt(selectedEndMonth),
             endDay: parseInt(selectedEndDay),
-            endYear: selectedEndYear,
-            endHour: endHr,
-            endMin: selectedEndMin,
+            endYear: parseInt(selectedEndYear),
+            endHour: parseInt(endHr),
+            endMin: parseInt(selectedEndMin),
 
             vac: selectedVacancy,
 
