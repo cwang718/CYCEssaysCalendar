@@ -221,7 +221,7 @@ export default function EventsPage() {
         let endMonth = parseInt(parent[2].children[1].childNodes[0].data) - 1;
         let endDay = parseInt(parent[2].children[1].childNodes[2].data);
         let endYr = parseInt(parent[2].children[1].childNodes[4].data);
-        let endHr = parseInt(parent[1].children[1].childNodes[6].data);
+        let endHr = parseInt(parent[2].children[1].childNodes[6].data);
         let endMin = parseInt(parent[2].children[1].childNodes[8].data);
         let endDon = parent[2].children[1].childNodes[10].data;
 

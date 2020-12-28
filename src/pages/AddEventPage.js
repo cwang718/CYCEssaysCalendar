@@ -68,6 +68,8 @@ export default function AddEventPage() {
                 selectedVacancy + "_" + 
                 selectedColor + "_" + 
                 selectedDesc;
+
+        let addPrice = (price ? (parseFloat(price)) : price);
     
         const newReference = fireDb.ref('/events')
                                    .push();
@@ -95,7 +97,7 @@ export default function AddEventPage() {
     
             desc: selectedDesc,
 
-            price: parseFloat(price),
+            price: addPrice,
           })
           .then(() => console.log('Event added.'));
     };
