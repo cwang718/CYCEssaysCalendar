@@ -110,9 +110,6 @@ export default function EventsPage() {
         let endMin = parent[2].children[1].childNodes[8].data;
         let endDon = parent[2].children[1].childNodes[10].data;
 
-        console.log("startMonth", parent[1].children[1].childNodes[0]);
-        console.log("endMonth", endMonth);
-
         let desc = parent[3].childNodes[1].data;
 
         let vac = parent[5].children[0].innerHTML;
@@ -154,9 +151,6 @@ export default function EventsPage() {
                 cardColor + "_" + 
                 desc;
 
-        console.log(parent);
-        console.log(key);
-
         setEdit(true);
     }
 
@@ -178,6 +172,8 @@ export default function EventsPage() {
                 selectedVacancy + "_" + 
                 selectedColor + "_" + 
                 selectedDesc;
+        
+        let editPrice = (price ? (parseFloat(price)) : price);
 
         fireDb.ref("/events/" + e.target.id).set({
             id: key,
@@ -203,7 +199,7 @@ export default function EventsPage() {
     
             desc: selectedDesc,
 
-            price: price,
+            price: editPrice,
           })
           .then(() => console.log('Event edited.'));
 
@@ -281,7 +277,7 @@ export default function EventsPage() {
                             <div className="eventEndTime"><em>End time:</em> <span>{parseInt(event.endMonth) + 1}/{event.endDay}/{event.endYear} at {event.endHour>12 ? event.endHour - 12 : event.endHour}:{event.endMin<10 ? ("0" + event.endMin) : event.endMin}  {event.endHour>12 ? "PM" : "AM"}</span>
                             </div>
                             <div className="eventDesc"><em>Description: </em>{event.desc}</div>
-                            <div className="eventPrice"><em>Price: </em>{event.price ? ("$" + event.price) : "N/A"}</div>
+                            <div className="eventPrice"><em>Price: </em>{event.price ? ("$" + event.price.toFixed(2))  : "N/A"}</div>
                             {event.vac==="FULL" ? (<div className="eventVac" style={{ padding: 10, color: '#e66060' }}><strong>{event.vac}</strong></div>) : (<div className="eventVac" style={{ padding: 10 }}><strong>{event.vac}</strong></div>)}
                             <div style={{ display: 'flex', justifyContent:'space-between' }}>
                                 <button

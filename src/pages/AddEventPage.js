@@ -95,7 +95,7 @@ export default function AddEventPage() {
     
             desc: selectedDesc,
 
-            price: price,
+            price: parseFloat(price),
           })
           .then(() => console.log('Event added.'));
     };
