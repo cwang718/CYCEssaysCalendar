@@ -163,12 +163,12 @@ export default function EventsPage() {
                 selectedStartDay + "_" + 
                 selectedStartYear + "_" + 
                 selectedStartHour + ":" + 
-                selectedStartMin + selectedStartDoN + "_" + 
+                parseInt(selectedStartMin) + selectedStartDoN + "_" + 
                 selectedEndMonth + "_" + 
                 selectedEndDay + "_" + 
                 selectedEndYear + "_" + 
                 selectedEndHour + ":" + 
-                selectedEndMin + selectedEndDoN + "_" +
+                parseInt(selectedEndMin) + selectedEndDoN + "_" +
                 selectedVacancy + "_" + 
                 selectedColor + "_" + 
                 selectedDesc;
@@ -245,7 +245,7 @@ export default function EventsPage() {
                 vac + "_" + 
                 cardColor + "_" + 
                 desc;
-                        
+       
         let query = fireDb.ref("/events/")
                           .orderByChild("id")
                           .equalTo(key);
