@@ -297,7 +297,7 @@ export default function EventsPage() {
                             <Modal.Header closeButton>Edit Event</Modal.Header>
                         <Modal.Body>
             <div className="eventsCon">
-                    <div>Event title:</div>
+                    <div>Event title: <span style={{ color: 'red' }}>*</span></div>
                     <div className="row">
                         <input
                             name="title"
@@ -306,7 +306,7 @@ export default function EventsPage() {
                             required
                         ></input>
                     </div>
-                    <div>Starting time: </div>
+                    <div>Starting time: <span style={{ color: 'red' }}>*</span></div>
                 <div className="row">
                     <form>
                         <select 
@@ -472,7 +472,7 @@ export default function EventsPage() {
                     </form>
                 </div>
                 
-                    <div>Ending time: </div>
+                    <div>Ending time: <span style={{ color: 'red' }}>*</span></div>
                 <div className="row">
                     <form>
                         <select
@@ -638,7 +638,7 @@ export default function EventsPage() {
                     </form>
                 </div>
 
-                    <div>Vacancy: </div>
+                    <div>Vacancy: <span style={{ color: 'red' }}>*</span></div>
                 <div className="row">
                     <form>
                         <select 
@@ -650,7 +650,7 @@ export default function EventsPage() {
                     </form>
                 </div>
 
-                    <div>Color: </div>
+                    <div>Color: <span style={{ color: 'red' }}>*</span></div>
                     <div className="row">
                     <form>
                         <select 
@@ -665,7 +665,7 @@ export default function EventsPage() {
                     </form>
                     </div>
 
-                    <div>Description: </div>
+                    <div>Description: <span style={{ color: 'red' }}>*</span></div>
                     <div className="row">
                     <textarea 
                         rows="5" 
@@ -685,7 +685,8 @@ export default function EventsPage() {
                     ></input>
                     </div>
                 </div>
-                <div style={{ marginLeft: 'auto', marginRight: 'auto', }} onClick={editEventHandler}>
+                <div style={{ color: 'red', paddingTop: 20, paddingBottom: 20 }}>* Required fields</div>
+                <div style={{ display: 'flex', justifyContent: 'center' }} onClick={editEventHandler}>
                     <Button id={event.node}>
                         Submit Edits
                     </Button>
