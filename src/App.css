@@ -2,6 +2,7 @@
   background-color: #97b4d1;
   font-family: 'Ibarra Real Nova, serif';
   color: #21243b;
+  min-height: 100vh;
 }
 
 button {
@@ -11,6 +12,7 @@ button {
 .eventsButtonCon {
   padding: 25px;
   display: flex;
+  justify-content: space-between;
 }
 
 .bottomCon {

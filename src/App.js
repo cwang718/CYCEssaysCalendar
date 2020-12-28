@@ -20,10 +20,6 @@ function App() {
             <AddEventPage />
           </Route>
 
-          <Route exact path="/editevent/:event_id">
-            <EditEventPage />
-          </Route>
-
           <Route exact path="/">
             <LoginPage />
           </Route>

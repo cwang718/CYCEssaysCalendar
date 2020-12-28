@@ -68,10 +68,13 @@ export default function AddEventPage() {
                 selectedVacancy + "_" + 
                 selectedColor + "_" + 
                 selectedDesc;
-        key = key.replaceAll(".", "").replaceAll("#", "").replaceAll("$", "").replaceAll("[", "").replaceAll("]", "");
     
-        fireDb.ref('/events/' + key)
-              .set({
+        const newReference = fireDb.ref('/events')
+                                   .push();
+        newReference.set({
+            id: key,
+            node: newReference.key,
+
             name: selectedName,
     
             startMonth: parseInt(selectedStartMonth),
@@ -529,7 +532,7 @@ export default function AddEventPage() {
                     placement="bottom"
                     text="Bottom"
                     target="price"
-                    style={{ padding: 10, backgroundColor: '#c7e3ed', border: "1px solid black",WebkitBorderRadius: '10px', position: 'relative' }}>
+                    style={{ padding: 10 }}>
                     Price must be in this form:<br />
                     <em>Integer</em> OR <em>Integer</em>.XX
                 </Tooltip>

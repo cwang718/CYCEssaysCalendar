@@ -6,54 +6,52 @@ import { Tooltip } from 'reactstrap';
 import '../App.css';
 
 export default function EditEventPage() {
-    const { event_id } = useParams();
+    const { event_node } = useParams();
+    const [updated, setUpdated] = useState(false);
     const history = useHistory();
+  
+    let curStr = new Date().toLocaleString();
+    let curArr = curStr.split(",");
+    let curDate = curArr[0].split("/");
+    let curTime = curArr[1].replace(/\s+/g, '').split(":");
+    let curDoN = curTime[2].substring(2,4);
 
-    let oldArr = event_id.split("_");
-        
-    let oldStartTime = oldArr[4].split(":");
-    let oldStartMin = oldStartTime[1].slice(0,-2);
-    let oldStartDon = oldStartTime[1].slice(-2);
+    let years = [parseInt(curDate[2]) - 1, parseInt(curDate[2]), 
+                 parseInt(curDate[2]) + 1, parseInt(curDate[2]) + 2,
+                 parseInt(curDate[2]) + 3, parseInt(curDate[2]) + 4];
 
-    let oldEndTime = oldArr[8].split(":");
-    let oldEndMin = oldEndTime[1].slice(0,-2);
-    let oldEndDon = oldEndTime[1].slice(-2);
+    const [selectedName, setSelectedName] = useState("");
 
-    const [selectedName, setSelectedName] = useState(oldArr[0]);
+    let curMonth = parseInt(curDate[0]) - 1;
 
-    const [selectedStartMonth, setSelectedStartMonth] = useState(oldArr[1]);
-    const [selectedStartDay, setSelectedStartDay] = useState(oldArr[2]);
-    const [selectedStartYear, setSelectedStartYear] = useState(oldArr[3]);
-    const [selectedStartHour, setSelectedStartHour] = useState(oldStartTime[0]);
-    const [selectedStartMin, setSelectedStartMin] = useState(oldStartMin);
-    const [selectedStartDoN, setSelectedStartDoN] = useState(oldStartDon);
+    const [selectedStartMonth, setSelectedStartMonth] = useState(curMonth);
+    const [selectedStartDay, setSelectedStartDay] = useState(curDate[1]);
+    const [selectedStartYear, setSelectedStartYear] = useState(curDate[2]);
+    const [selectedStartHour, setSelectedStartHour] = useState(curTime[0]);
+    const [selectedStartMin, setSelectedStartMin] = useState(curTime[1]);
+    const [selectedStartDoN, setSelectedStartDoN] = useState(curDoN);
+    
+    const [selectedEndMonth, setSelectedEndMonth] = useState(curMonth);
+    const [selectedEndDay, setSelectedEndDay] = useState(curDate[1]);
+    const [selectedEndYear, setSelectedEndYear] = useState(curDate[2]);
+    const [selectedEndHour, setSelectedEndHour] = useState(curTime[0]);
+    const [selectedEndMin, setSelectedEndMin] = useState(curTime[1]);
+    const [selectedEndDoN, setSelectedEndDoN] = useState(curDoN);
 
-    const [selectedEndMonth, setSelectedEndMonth] = useState(oldArr[5]);
-    const [selectedEndDay, setSelectedEndDay] = useState(oldArr[6]);
-    const [selectedEndYear, setSelectedEndYear] = useState(oldArr[7]);
-    const [selectedEndHour, setSelectedEndHour] = useState(oldEndTime[0]);
-    const [selectedEndMin, setSelectedEndMin] = useState(oldEndMin);
-    const [selectedEndDoN, setSelectedEndDoN] = useState(oldEndDon);
+    const [selectedVacancy, setSelectedVacancy] = useState("NOT FULL");
 
-    let years = [parseInt(oldArr[3]) - 1, parseInt(oldArr[3]), 
-                 parseInt(oldArr[3]) + 1, parseInt(oldArr[3]) + 2,
-                 parseInt(oldArr[3]) + 3, parseInt(oldArr[3]) + 4];
+    const [selectedColor, setSelectedColor] = useState("5987E7");
 
-    const [selectedVacancy, setSelectedVacancy] = useState(oldArr[9]);
-
-    const [selectedColor, setSelectedColor] = useState(oldArr[10]);
-
-    const [selectedDesc, setSelectedDesc] = useState(oldArr[11]);
+    const [selectedDesc, setSelectedDesc] = useState("");
 
     const [price, setPrice] = useState("");
     const [popOpen, setPopOpen] = useState(false);
     const regex = /^\d+(.\d{1,2})?$/;
-    const [deleted, setDeleted] = useState(false);
 
     useEffect(() => {  
-        if(deleted){
-            fireDb.ref("events/" + event_id)
-                .on("value", function(snapshot) {
+        if(updated){
+            fireDb.ref("events/" + event_node)
+                .once("value", function(snapshot) {
                     let oldData = snapshot.val();
                     console.log("oldData in EditPage:", oldData);
 
@@ -87,8 +85,8 @@ export default function EditEventPage() {
                 }, function (errorObject) {
                     console.log("Realtime DB read failed: " + errorObject.code);
                 });
-        }                            
-    }, [event_id, deleted])
+            }
+    }, [event_node])
 
     const handlePriceChange = (e) => {
         let typedPrice = e.target.value;
@@ -114,10 +112,15 @@ export default function EditEventPage() {
                 selectedVacancy + "_" + 
                 selectedColor + "_" + 
                 selectedDesc;
-        key = key.replaceAll(".", "").replaceAll("#", "").replaceAll("$", "").replaceAll("[", "").replaceAll("]", "");
+
+        let query = fireDb.ref("/events/")
+                          .orderByChild("id")
+                          .equalTo(key);
     
-        fireDb.ref('/events/' + key)
-              .set({
+        fireDb.ref("/events/" + event_node).set({
+            id: key,
+            node: event_node,
+
             name: selectedName,
     
             startMonth: parseInt(selectedStartMonth),
@@ -140,11 +143,10 @@ export default function EditEventPage() {
 
             price: price,
           })
-          .then(() => console.log('Editted event added.'));
+          .then(() => console.log('Event edited.'));
 
-          setDeleted(true);
-          fireDb.ref("/events/" + event_id).remove();
-          history.push("/eventdetails");
+          setUpdated(true);
+        //   history.push("eventdetails/");
           
     };
 
