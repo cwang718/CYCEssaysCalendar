@@ -103,6 +103,7 @@ export default function AddEventPage() {
     };
 
     return (
+        <div className="container">
         <div className="login">
             <Header></Header>
             <div className="pageTitle">Add an Event</div>
@@ -550,5 +551,6 @@ export default function AddEventPage() {
                 </Link>
             </div>
         </div>
+    </div>
     )
 }
