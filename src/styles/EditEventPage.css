@@ -1,0 +1,19 @@
+.container{
+    border: 1px solid black;
+    border-radius: 15px;
+}
+
+.login.row {
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+.event.container{
+    width: 80%;
+}
+
+.row {
+    padding: 5%;
+}

@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import { fireDb } from "../Firebase/config";
 import { Tooltip } from 'reactstrap';
-import '../App.css';
+// import '../App.css';
+import '../styles/EditEventPage.css';
+
 
 export default function AddEventPage() {
     let curStr = new Date().toLocaleString();
@@ -103,11 +105,13 @@ export default function AddEventPage() {
     };
 
     return (
-        <div className="container">
-        <div className="login">
-            <Header></Header>
+        <div className="event container">
+        <div className="row">
+            <div className="eventsCon"></div>
             <div className="pageTitle">Add an Event</div>
-            <div className="eventsCon">
+        </div>
+        <div className="login row">
+            <div className="col-6">
                 <div className="row">
                     <span className="label">Event title: </span>
                     <input
@@ -474,8 +478,9 @@ export default function AddEventPage() {
                         </select>
                     </form>
                 </div>
-
-                <div className="row">
+            </div>
+            <div className="col-6">
+            <div className="row">
                     <span className="label">Vacancy: </span>
                     <form>
                         <select 
@@ -550,7 +555,7 @@ export default function AddEventPage() {
                     </button>
                 </Link>
             </div>
-        </div>
+            </div>
     </div>
     )
 }
