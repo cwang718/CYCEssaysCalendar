@@ -107,7 +107,6 @@ export default function AddEventPage() {
     return (
         <div className="event container">
         <div className="row">
-            <div className="eventsCon"></div>
             <div className="pageTitle">Add an Event</div>
         </div>
         <div className="login row">
@@ -124,8 +123,9 @@ export default function AddEventPage() {
                     ></input>
                 </div>
                 <div className="row">
-                    <span className="label">Starting time: </span>
-                    <form>
+                    <div className="row">
+                        <span className="label">Starting time: </span>
+                        <form>
                         <select 
                             className="time" 
                             defaultValue={parseInt(curDate[0]) - 1}
@@ -144,8 +144,8 @@ export default function AddEventPage() {
                             <option value={10}>Nov</option>
                             <option value={11}>Dec</option>
                         </select>
-                    </form>
-                    <form>
+                        </form>
+                        <form>
                         <select 
                             className="time" 
                             defaultValue={curDate[1]} 
@@ -183,9 +183,9 @@ export default function AddEventPage() {
                             <option value={30}>30</option>
                             <option value={31}>31</option>
                         </select>
-                    </form>
-                    <span>,</span>
-                    <form>
+                        </form>
+                        <span>,</span>
+                        <form>
                         <select 
                             className="time" 
                             defaultValue={parseInt(curDate[2])} 
@@ -200,6 +200,8 @@ export default function AddEventPage() {
                         </select>
                     </form>
                     <span>,</span>
+                    </div>
+                    <div className="row hour">
                     <form>
                     <select 
                             className="time" 
@@ -299,9 +301,11 @@ export default function AddEventPage() {
                             <option value="PM">PM</option>
                         </select>
                     </form>
+                    </div>
                 </div>
                 
                 <div className="row">
+                    <div className = "row">
                     <span className="label">Ending time: </span>
                     <form>
                         <select 
@@ -378,6 +382,8 @@ export default function AddEventPage() {
                         </select>
                     </form>
                     <span>,</span>
+                    </div>
+                    <div className = "row hour">
                     <form>
                         <select 
                             className="time" 
@@ -477,6 +483,7 @@ export default function AddEventPage() {
                             <option value="PM">PM</option>
                         </select>
                     </form>
+                    </div>
                 </div>
             </div>
             <div className="col-6">
@@ -484,7 +491,7 @@ export default function AddEventPage() {
                     <span className="label">Vacancy: </span>
                     <form>
                         <select 
-                            className="time" 
+                            className="type" 
                             defaultValue={selectedVacancy}
                             onChange={(input) => setSelectedVacancy(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
@@ -498,7 +505,7 @@ export default function AddEventPage() {
                     <span className="label">Color: </span>
                     <form>
                         <select 
-                            className="time" 
+                            className="type" 
                             defaultValue="5987E7"
                             onChange={(input) => setSelectedColor(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
@@ -534,7 +541,7 @@ export default function AddEventPage() {
                         style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}
                     ></input>
                 </div>
-                
+
                 <Tooltip
                     isOpen={popOpen}
                     placement="bottom"
