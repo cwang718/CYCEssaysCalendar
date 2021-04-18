@@ -17,14 +17,14 @@ export default function AddEventPage() {
 
     const [selectedName, setSelectedName] = useState("");
 
-    const [selectedStartMonth, setSelectedStartMonth] = useState(curDate[0]);
+    const [selectedStartMonth, setSelectedStartMonth] = useState(curDate[0]-1);
     const [selectedStartDay, setSelectedStartDay] = useState(curDate[1]);
     const [selectedStartYear, setSelectedStartYear] = useState(curDate[2]);
     const [selectedStartHour, setSelectedStartHour] = useState(curTime[0]);
     const [selectedStartMin, setSelectedStartMin] = useState(curTime[1]);
     const [selectedStartDoN, setSelectedStartDoN] = useState(curDoN);
     
-    const [selectedEndMonth, setSelectedEndMonth] = useState(curDate[0]);
+    const [selectedEndMonth, setSelectedEndMonth] = useState(curDate[0]-1);
     const [selectedEndDay, setSelectedEndDay] = useState(curDate[1]);
     const [selectedEndYear, setSelectedEndYear] = useState(curDate[2]);
     const [selectedEndHour, setSelectedEndHour] = useState(curTime[0]);
@@ -39,7 +39,9 @@ export default function AddEventPage() {
         let startHr = selectedStartDoN==="AM" ? parseInt(selectedStartHour) : (parseInt(selectedStartHour) + 12);
         let endHr = selectedEndDoN==="AM" ? parseInt(selectedEndHour) : (parseInt(selectedEndHour) + 12);
     
+        let eventNodeId = (parseInt(selectedStartMonth)+1) + "-" + selectedStartYear;
         const newReference = fireDb.ref('/events')
+                                   .child(`/${eventNodeId}`)
                                    .push();
         console.log('Auto generated key: ', newReference.key);
     

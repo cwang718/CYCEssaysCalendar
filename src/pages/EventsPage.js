@@ -5,13 +5,20 @@ import { fireDb } from "../Firebase/config";
 import '../App.css';
 
 export default function EventsPage() {
+    let eventsByMonths = [];
     let events = [];
     fireDb
       .ref("/events")
       .on("value", (snapshot) => {
           snapshot.forEach((snap) => {
-              events.push(snap.val());
+              eventsByMonths.push(snap.val());
           });
+          eventsByMonths.forEach((oneMonth) => {
+              let monthEventKeys = Object.keys(oneMonth);
+              monthEventKeys.forEach((eventKey) => {
+                  events.push(oneMonth[eventKey]);
+              })
+          })
       });
 
     return (
