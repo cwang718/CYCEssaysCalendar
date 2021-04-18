@@ -1,9 +1,21 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+
 import '../App.css';
 
 export default function LoginPage() {
     const [code, setCode] = useState("");
+    const { REACT_APP_CODE } = process.env;
+    const history = useHistory();
+
+    const handleLogin = (e) => {
+        if(code.localeCompare(REACT_APP_CODE)===0) {
+            console.log("Successful login");
+            history.push("/eventdetails");
+        } else {
+            alert("Incorrect code");
+        }
+    }
 
     return (
         <div className="login">
@@ -21,9 +33,7 @@ export default function LoginPage() {
                 ></input>
             </div>
             <div className="loginButtonCon">
-                <Link to="eventdetails">
-                    <button className="loginButton">Login</button>
-                </Link>
+                <button className="loginButton" onClick={handleLogin}>Login</button>
             </div>
         </div>
     )

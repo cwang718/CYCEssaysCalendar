@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import { fireDb } from "../Firebase/config";
-import '../App.css';
+import { Tooltip } from 'reactstrap';
+// import '../App.css';
+import '../styles/EditEventPage.css';
+
 
 export default function AddEventPage() {
     let curStr = new Date().toLocaleString();
@@ -17,62 +20,99 @@ export default function AddEventPage() {
 
     const [selectedName, setSelectedName] = useState("");
 
-    const [selectedStartMonth, setSelectedStartMonth] = useState(curDate[0]-1);
+    let curMonth = parseInt(curDate[0]) - 1;
+
+    const [selectedStartMonth, setSelectedStartMonth] = useState(curMonth);
     const [selectedStartDay, setSelectedStartDay] = useState(curDate[1]);
     const [selectedStartYear, setSelectedStartYear] = useState(curDate[2]);
     const [selectedStartHour, setSelectedStartHour] = useState(curTime[0]);
     const [selectedStartMin, setSelectedStartMin] = useState(curTime[1]);
     const [selectedStartDoN, setSelectedStartDoN] = useState(curDoN);
     
-    const [selectedEndMonth, setSelectedEndMonth] = useState(curDate[0]-1);
+    const [selectedEndMonth, setSelectedEndMonth] = useState(curMonth);
     const [selectedEndDay, setSelectedEndDay] = useState(curDate[1]);
     const [selectedEndYear, setSelectedEndYear] = useState(curDate[2]);
     const [selectedEndHour, setSelectedEndHour] = useState(curTime[0]);
     const [selectedEndMin, setSelectedEndMin] = useState(curTime[1]);
     const [selectedEndDoN, setSelectedEndDoN] = useState(curDoN);
 
-    const [selectedDesc, setSelectedDesc] = useState("");
+    const [selectedVacancy, setSelectedVacancy] = useState("NOT FULL");
 
     const [selectedColor, setSelectedColor] = useState("5987E7");
+
+    const [selectedDesc, setSelectedDesc] = useState("");
+
+    const [price, setPrice] = useState("");
+    const [popOpen, setPopOpen] = useState(false);
+    const regex = /^\d+(.\d{1,2})?$/;
+
+    const handlePriceChange = (e) => {
+        let typedPrice = e.target.value;
+        setPrice(typedPrice);
+        setPopOpen(!regex.test(typedPrice));
+    }
 
     const handleNewEvent = (e) => {
         let startHr = selectedStartDoN==="AM" ? parseInt(selectedStartHour) : (parseInt(selectedStartHour) + 12);
         let endHr = selectedEndDoN==="AM" ? parseInt(selectedEndHour) : (parseInt(selectedEndHour) + 12);
+
+        let key = selectedName + "_" + 
+                selectedStartMonth + "_" + 
+                selectedStartDay + "_" + 
+                selectedStartYear + "_" + 
+                selectedStartHour + ":" + 
+                parseInt(selectedStartMin) + selectedStartDoN + "_" + 
+                selectedEndMonth + "_" + 
+                selectedEndDay + "_" + 
+                selectedEndYear + "_" + 
+                selectedEndHour + ":" + 
+                parseInt(selectedEndMin) + selectedEndDoN +"_" +
+                selectedVacancy + "_" + 
+                selectedColor + "_" + 
+                selectedDesc;
+
+        let addPrice = (price ? (parseFloat(price)) : price);
     
         let eventNodeId = (parseInt(selectedStartMonth)+1) + "-" + selectedStartYear;
         const newReference = fireDb.ref('/events')
                                    .child(`/${eventNodeId}`)
                                    .push();
-        console.log('Auto generated key: ', newReference.key);
-    
-        newReference
-          .set({
+        newReference.set({
+            id: key,
+            node: newReference.key,
+
             name: selectedName,
     
-            startMonth: selectedStartMonth - 1,
-            startDay: selectedStartDay,
-            startYear: selectedStartYear,
-            startHour: startHr,
-            startMin: selectedStartMin,
+            startMonth: parseInt(selectedStartMonth),
+            startDay: parseInt(selectedStartDay),
+            startYear: parseInt(selectedStartYear),
+            startHour: parseInt(startHr),
+            startMin: parseInt(selectedStartMin),
       
-            endMonth: selectedEndMonth - 1,
+            endMonth: parseInt(selectedEndMonth),
             endDay: parseInt(selectedEndDay),
-            endYear: selectedEndYear,
-            endHour: endHr,
-            endMin: selectedEndMin,
+            endYear: parseInt(selectedEndYear),
+            endHour: parseInt(endHr),
+            endMin: parseInt(selectedEndMin),
+
+            vac: selectedVacancy,
 
             color: selectedColor,
     
             desc: selectedDesc,
+
+            price: addPrice,
           })
           .then(() => console.log('Event added.'));
     };
 
     return (
-        <div className="login">
-            <Header></Header>
+        <div className="event container">
+        <div className="row">
             <div className="pageTitle">Add an Event</div>
-            <div className="eventsCon">
+        </div>
+        <div className="login row">
+            <div className="col-6">
                 <div className="row">
                     <span className="label">Event title: </span>
                     <input
@@ -81,15 +121,18 @@ export default function AddEventPage() {
                         value={selectedName}
                         onChange={(e) => setSelectedName(e.target.value)}
                         required
+                        style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}
                     ></input>
                 </div>
                 <div className="row">
-                    <span className="label">Starting time: </span>
-                    <form>
+                    <div className="row">
+                        <span className="label">Starting time: </span>
+                        <form>
                         <select 
                             className="time" 
                             defaultValue={parseInt(curDate[0]) - 1}
-                            onChange={(input) => setSelectedStartMonth(input.target.value)}>
+                            onChange={(input) => setSelectedStartMonth(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={0}>Jan</option>
                             <option value={1}>Feb</option>
                             <option value={2}>Mar</option>
@@ -103,9 +146,13 @@ export default function AddEventPage() {
                             <option value={10}>Nov</option>
                             <option value={11}>Dec</option>
                         </select>
-                    </form>
-                    <form>
-                        <select className="time" defaultValue={curDate[1]} onChange={(input) => setSelectedStartDay(input.target.value)}>
+                        </form>
+                        <form>
+                        <select 
+                            className="time" 
+                            defaultValue={curDate[1]} 
+                            onChange={(input) => setSelectedStartDay(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={1}>1</option>
                             <option value={2}>2</option>
                             <option value={3}>3</option>
@@ -138,120 +185,14 @@ export default function AddEventPage() {
                             <option value={30}>30</option>
                             <option value={31}>31</option>
                         </select>
-                    </form>
-                    <span>,</span>
-                    <form>
-                        <select className="time" defaultValue={parseInt(curDate[2])} onChange={(input) => setSelectedStartYear(input.target.value)}>
-                        <option value={years[0]}>{years[0]}</option>
-                            <option value={years[1]}>{years[1]}</option>
-                            <option value={years[2]}>{years[2]}</option>
-                            <option value={years[3]}>{years[3]}</option>
-                            <option value={years[4]}>{years[4]}</option>
-                            <option value={years[5]}>{years[5]}</option>
-                        </select>
-                    </form>
-                    <span>,</span>
-                    <form>
-                    <select 
-                            className="time" 
-                            defaultValue={curTime[0]}
-                            onChange={(input) => setSelectedStartHour(input.target.value)}>
-                            <option value={1}>1</option>
-                            <option value={2}>2</option>
-                            <option value={3}>3</option>
-                            <option value={4}>4</option>
-                            <option value={5}>5</option>
-                            <option value={6}>6</option>
-                            <option value={7}>7</option>
-                            <option value={8}>8</option>
-                            <option value={9}>9</option>
-                            <option value={10}>10</option>
-                            <option value={11}>11</option>
-                            <option value={12}>12</option>
-                        </select>
-                    </form>
-                    <span>:</span>
-                    <form>
+                        </form>
+                        <span>,</span>
+                        <form>
                         <select 
                             className="time" 
-                            defaultValue={curTime[1]}
-                            onChange={(input) => setSelectedStartMin(input.target.value)}>
-                            <option value={0}>00</option>
-                            <option value={15}>15</option>
-                            <option value={30}>30</option>
-                            <option value={45}>45</option>
-                        </select>
-                    </form>
-                    <form>
-                        <select 
-                            className="time" 
-                            defaultValue={curDoN}
-                            onChange={(input) => setSelectedStartDoN(input.target.value)}>
-                            <option value="AM">AM</option>
-                            <option value="PM">PM</option>
-                        </select>
-                    </form>
-                </div>
-                
-                <div className="row">
-                    <span className="label">Ending time: </span>
-                    <form>
-                        <select 
-                            className="time" 
-                            defaultValue={parseInt(curDate[0]) - 1}
-                            onChange={(input) => setSelectedEndMonth(input.target.value)}>
-                            <option value={0}>Jan</option>
-                            <option value={1}>Feb</option>
-                            <option value={2}>Mar</option>
-                            <option value={3}>Apr</option>
-                            <option value={4}>May</option>
-                            <option value={5}>Jun</option>
-                            <option value={6}>Jul</option>
-                            <option value={7}>Aug</option>
-                            <option value={8}>Sep</option>
-                            <option value={9}>Oct</option>
-                            <option value={10}>Nov</option>
-                            <option value={11}>Dec</option>
-                        </select>
-                    </form>
-                    <form>
-                        <select className="time" defaultValue={curDate[1]} onChange={(input) => setSelectedEndDay(input.target.value)}>
-                            <option value={1}>1</option>
-                            <option value={2}>2</option>
-                            <option value={3}>3</option>
-                            <option value={4}>4</option>
-                            <option value={5}>5</option>
-                            <option value={6}>6</option>
-                            <option value={7}>7</option>
-                            <option value={8}>8</option>
-                            <option value={9}>9</option>
-                            <option value={10}>10</option>
-                            <option value={11}>11</option>
-                            <option value={12}>12</option>
-                            <option value={13}>13</option>
-                            <option value={14}>14</option>
-                            <option value={15}>15</option>
-                            <option value={16}>16</option>
-                            <option value={17}>17</option>
-                            <option value={18}>18</option>
-                            <option value={19}>19</option>
-                            <option value={20}>20</option>
-                            <option value={21}>21</option>
-                            <option value={22}>22</option>
-                            <option value={23}>23</option>
-                            <option value={24}>24</option>
-                            <option value={25}>25</option>
-                            <option value={26}>26</option>
-                            <option value={27}>27</option>
-                            <option value={28}>28</option>
-                            <option value={29}>29</option>
-                            <option value={30}>30</option>
-                            <option value={31}>31</option>
-                        </select>
-                    </form>
-                    <span>,</span>
-                    <form>
-                        <select className="time" defaultValue={parseInt(curDate[2])} onChange={(input) => setSelectedEndYear(input.target.value)}>
+                            defaultValue={parseInt(curDate[2])} 
+                            onChange={(input) => setSelectedStartYear(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={years[0]}>{years[0]}</option>
                             <option value={years[1]}>{years[1]}</option>
                             <option value={years[2]}>{years[2]}</option>
@@ -261,11 +202,14 @@ export default function AddEventPage() {
                         </select>
                     </form>
                     <span>,</span>
+                    </div>
+                    <div className="row hour">
                     <form>
-                        <select 
+                    <select 
                             className="time" 
                             defaultValue={curTime[0]}
-                            onChange={(input) => setSelectedEndHour(input.target.value)}>
+                            onChange={(input) => setSelectedStartHour(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={1}>1</option>
                             <option value={2}>2</option>
                             <option value={3}>3</option>
@@ -285,20 +229,276 @@ export default function AddEventPage() {
                         <select 
                             className="time" 
                             defaultValue={curTime[1]}
-                            onChange={(input) => setSelectedEndMin(input.target.value)}>
+                            onChange={(input) => setSelectedStartMin(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={0}>00</option>
+                            <option value={1}>01</option>
+                            <option value={2}>02</option>
+                            <option value={3}>03</option>
+                            <option value={4}>04</option>
+                            <option value={5}>05</option>
+                            <option value={6}>06</option>
+                            <option value={7}>07</option>
+                            <option value={8}>08</option>
+                            <option value={9}>09</option>
+                            <option value={10}>10</option>
+                            <option value={11}>11</option>
+                            <option value={12}>12</option>
+                            <option value={13}>13</option>
+                            <option value={14}>14</option>
                             <option value={15}>15</option>
+                            <option value={16}>16</option>
+                            <option value={17}>17</option>
+                            <option value={18}>18</option>
+                            <option value={19}>19</option>
+                            <option value={20}>20</option>
+                            <option value={21}>21</option>
+                            <option value={22}>22</option>
+                            <option value={23}>23</option>
+                            <option value={24}>24</option>
+                            <option value={25}>25</option>
+                            <option value={26}>26</option>
+                            <option value={27}>27</option>
+                            <option value={28}>28</option>
+                            <option value={29}>29</option>
                             <option value={30}>30</option>
+                            <option value={31}>31</option>
+                            <option value={32}>32</option>
+                            <option value={33}>33</option>
+                            <option value={34}>34</option>
+                            <option value={35}>35</option>
+                            <option value={36}>36</option>
+                            <option value={37}>37</option>
+                            <option value={38}>38</option>
+                            <option value={39}>39</option>
+                            <option value={40}>40</option>
+                            <option value={41}>41</option>
+                            <option value={42}>42</option>
+                            <option value={43}>43</option>
+                            <option value={44}>44</option>
                             <option value={45}>45</option>
+                            <option value={46}>46</option>
+                            <option value={47}>47</option>
+                            <option value={48}>48</option>
+                            <option value={49}>49</option>
+                            <option value={50}>50</option>
+                            <option value={51}>51</option>
+                            <option value={52}>52</option>
+                            <option value={53}>53</option>
+                            <option value={54}>54</option>
+                            <option value={55}>55</option>
+                            <option value={56}>56</option>
+                            <option value={57}>57</option>
+                            <option value={58}>58</option>
+                            <option value={59}>59</option>
                         </select>
                     </form>
                     <form>
                         <select 
                             className="time" 
                             defaultValue={curDoN}
-                            onChange={(input) => setSelectedEndDoN(input.target.value)}>
+                            onChange={(input) => setSelectedStartDoN(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value="AM">AM</option>
                             <option value="PM">PM</option>
+                        </select>
+                    </form>
+                    </div>
+                </div>
+                
+                <div className="row">
+                    <div className = "row">
+                    <span className="label">Ending time: </span>
+                    <form>
+                        <select 
+                            className="time" 
+                            defaultValue={parseInt(curDate[0]) - 1}
+                            onChange={(input) => setSelectedEndMonth(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            <option value={0}>Jan</option>
+                            <option value={1}>Feb</option>
+                            <option value={2}>Mar</option>
+                            <option value={3}>Apr</option>
+                            <option value={4}>May</option>
+                            <option value={5}>Jun</option>
+                            <option value={6}>Jul</option>
+                            <option value={7}>Aug</option>
+                            <option value={8}>Sep</option>
+                            <option value={9}>Oct</option>
+                            <option value={10}>Nov</option>
+                            <option value={11}>Dec</option>
+                        </select>
+                    </form>
+                    <form>
+                        <select 
+                            className="time" 
+                            defaultValue={curDate[1]} 
+                            onChange={(input) => setSelectedEndDay(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            <option value={1}>1</option>
+                            <option value={2}>2</option>
+                            <option value={3}>3</option>
+                            <option value={4}>4</option>
+                            <option value={5}>5</option>
+                            <option value={6}>6</option>
+                            <option value={7}>7</option>
+                            <option value={8}>8</option>
+                            <option value={9}>9</option>
+                            <option value={10}>10</option>
+                            <option value={11}>11</option>
+                            <option value={12}>12</option>
+                            <option value={13}>13</option>
+                            <option value={14}>14</option>
+                            <option value={15}>15</option>
+                            <option value={16}>16</option>
+                            <option value={17}>17</option>
+                            <option value={18}>18</option>
+                            <option value={19}>19</option>
+                            <option value={20}>20</option>
+                            <option value={21}>21</option>
+                            <option value={22}>22</option>
+                            <option value={23}>23</option>
+                            <option value={24}>24</option>
+                            <option value={25}>25</option>
+                            <option value={26}>26</option>
+                            <option value={27}>27</option>
+                            <option value={28}>28</option>
+                            <option value={29}>29</option>
+                            <option value={30}>30</option>
+                            <option value={31}>31</option>
+                        </select>
+                    </form>
+                    <span>,</span>
+                    <form>
+                        <select 
+                            className="time" 
+                            defaultValue={parseInt(curDate[2])} 
+                            onChange={(input) => setSelectedEndYear(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            <option value={years[0]}>{years[0]}</option>
+                            <option value={years[1]}>{years[1]}</option>
+                            <option value={years[2]}>{years[2]}</option>
+                            <option value={years[3]}>{years[3]}</option>
+                            <option value={years[4]}>{years[4]}</option>
+                            <option value={years[5]}>{years[5]}</option>
+                        </select>
+                    </form>
+                    <span>,</span>
+                    </div>
+                    <div className = "row hour">
+                    <form>
+                        <select 
+                            className="time" 
+                            defaultValue={curTime[0]}
+                            onChange={(input) => setSelectedEndHour(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            <option value={1}>1</option>
+                            <option value={2}>2</option>
+                            <option value={3}>3</option>
+                            <option value={4}>4</option>
+                            <option value={5}>5</option>
+                            <option value={6}>6</option>
+                            <option value={7}>7</option>
+                            <option value={8}>8</option>
+                            <option value={9}>9</option>
+                            <option value={10}>10</option>
+                            <option value={11}>11</option>
+                            <option value={12}>12</option>
+                        </select>
+                    </form>
+                    <span>:</span>
+                    <form>
+                        <select 
+                            className="time" 
+                            defaultValue={curTime[1]}
+                            onChange={(input) => setSelectedEndMin(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            <option value={0}>00</option>
+                            <option value={1}>01</option>
+                            <option value={2}>02</option>
+                            <option value={3}>03</option>
+                            <option value={4}>04</option>
+                            <option value={5}>05</option>
+                            <option value={6}>06</option>
+                            <option value={7}>07</option>
+                            <option value={8}>08</option>
+                            <option value={9}>09</option>
+                            <option value={10}>10</option>
+                            <option value={11}>11</option>
+                            <option value={12}>12</option>
+                            <option value={13}>13</option>
+                            <option value={14}>14</option>
+                            <option value={15}>15</option>
+                            <option value={16}>16</option>
+                            <option value={17}>17</option>
+                            <option value={18}>18</option>
+                            <option value={19}>19</option>
+                            <option value={20}>20</option>
+                            <option value={21}>21</option>
+                            <option value={22}>22</option>
+                            <option value={23}>23</option>
+                            <option value={24}>24</option>
+                            <option value={25}>25</option>
+                            <option value={26}>26</option>
+                            <option value={27}>27</option>
+                            <option value={28}>28</option>
+                            <option value={29}>29</option>
+                            <option value={30}>30</option>
+                            <option value={31}>31</option>
+                            <option value={32}>32</option>
+                            <option value={33}>33</option>
+                            <option value={34}>34</option>
+                            <option value={35}>35</option>
+                            <option value={36}>36</option>
+                            <option value={37}>37</option>
+                            <option value={38}>38</option>
+                            <option value={39}>39</option>
+                            <option value={40}>40</option>
+                            <option value={41}>41</option>
+                            <option value={42}>42</option>
+                            <option value={43}>43</option>
+                            <option value={44}>44</option>
+                            <option value={45}>45</option>
+                            <option value={46}>46</option>
+                            <option value={47}>47</option>
+                            <option value={48}>48</option>
+                            <option value={49}>49</option>
+                            <option value={50}>50</option>
+                            <option value={51}>51</option>
+                            <option value={52}>52</option>
+                            <option value={53}>53</option>
+                            <option value={54}>54</option>
+                            <option value={55}>55</option>
+                            <option value={56}>56</option>
+                            <option value={57}>57</option>
+                            <option value={58}>58</option>
+                            <option value={59}>59</option>
+                        </select>
+                    </form>
+                    <form>
+                        <select 
+                            className="time" 
+                            defaultValue={curDoN}
+                            onChange={(input) => setSelectedEndDoN(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+                    </form>
+                    </div>
+                </div>
+            </div>
+            <div className="col-6">
+            <div className="row">
+                    <span className="label">Vacancy: </span>
+                    <form>
+                        <select 
+                            className="type" 
+                            defaultValue={selectedVacancy}
+                            onChange={(input) => setSelectedVacancy(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            <option value="NOT FULL">Not full</option>
+                            <option value="FULL">Full</option>
                         </select>
                     </form>
                 </div>
@@ -307,9 +507,10 @@ export default function AddEventPage() {
                     <span className="label">Color: </span>
                     <form>
                         <select 
-                            className="time" 
+                            className="type" 
                             defaultValue="5987E7"
-                            onChange={(input) => setSelectedColor(input.target.value)}>
+                            onChange={(input) => setSelectedColor(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value="5987E7">Blue (default)</option>
                             <option value="8CE5EB">Turquoise</option>
                             <option value="FFD076">Golden</option>
@@ -325,15 +526,45 @@ export default function AddEventPage() {
                         className="desc" 
                         rows="5" 
                         cols="40"
-                        onChange={(input) => setSelectedDesc(input.target.value)}>
+                        onChange={(input) => setSelectedDesc(input.target.value)}
+                        style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                     </textarea>
                 </div>
+
+                <div className="row" style={{ paddingBottom: 50 }}>
+                    <span className="label">Price (optional): </span>
+                    <span style={{ fontSize: 30 }}>$</span>
+                    <input
+                        className="price"
+                        id="price"
+                        name="price"
+                        value={price}
+                        onChange={handlePriceChange}
+                        style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}
+                    ></input>
+                </div>
+
+                <Tooltip
+                    isOpen={popOpen}
+                    placement="bottom"
+                    text="Bottom"
+                    target="price"
+                    style={{ padding: 10 }}>
+                    Price must be in this form:<br />
+                    <em>Integer</em> OR <em>Integer</em>.XX
+                </Tooltip>
             </div>
             <div className="loginButtonPageCon">
                 <Link to="eventdetails">
-                    <button className="loginButton" onClick={handleNewEvent}>Add Event</button>
+                    <button 
+                        className="loginButton" 
+                        onClick={handleNewEvent} 
+                        style={{ backgroundColor: `#${selectedColor}` }}>
+                        Add Event
+                    </button>
                 </Link>
             </div>
-        </div>
+            </div>
+    </div>
     )
 }

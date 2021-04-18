@@ -1,3 +1,10 @@
+.App {
+  background-color: #97b4d1;
+  font-family: 'Ibarra Real Nova, serif';
+  color: #21243b;
+  min-height: 100vh;
+}
+
 button {
   font-size: 25px;
 }
@@ -5,6 +12,7 @@ button {
 .eventsButtonCon {
   padding: 25px;
   display: flex;
+  justify-content: space-between;
 }
 
 .bottomCon {
@@ -52,6 +60,11 @@ button {
   font-size: 25px;
 }
 
+.label, .type{
+  font-size: 25px;
+  width: 180px;
+}
+
 .logo {
   width: 200px;
   padding-top: 50px;
@@ -82,6 +95,7 @@ button {
 }
 
 .pageTitle {
+  text-align: center;
   font-size: 30px;
   padding-bottom: 30px;
 }
@@ -89,11 +103,17 @@ button {
 .row {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  padding: 20px;
-  padding-left: 20%;
-  padding-right: 20%;
+  justify-content: center;
   align-items: center;
+}
+
+.row.hour{
+  display: flex;
+  flex-direction: row;
+  flex: right;
+  justify-content: center;
+  align-items: right;
+  padding-left: 50%;
 }
 
 .subtitle {
@@ -103,4 +123,19 @@ button {
 .title {
   font-size: 30px;
   font-weight: bold;
+}
+
+.tooltip-arrow {
+  top: 0;
+  left: 50%;
+  margin-left: -5px;
+  border-bottom-color: #000000; /* black */
+  border-width: 0 5px 5px;
+}
+
+.event.container{
+  background-color: aliceblue;
+  border-color: aquamarine;
+  border-radius: 20px;
+  border-width: 5px;
 }

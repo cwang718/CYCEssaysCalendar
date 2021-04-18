@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import EventsPage from "./pages/EventsPage";
 import AddEventPage from "./pages/AddEventPage";
+import EditEventPage from "./pages/EditEventPage";
 
 function App() {
   return (

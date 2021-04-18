@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useParams } from "react-router-dom";
 import Header from "../components/Header";
-import { Modal, Button } from "react-bootstrap";
 import { fireDb } from "../Firebase/config";
+import { Tooltip } from 'reactstrap';
 import '../App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default function EventsPage() {
-    let eventsByMonths = [];
+export default function EditEventPage() {
+    const { event_node } = useParams();
+    const [updated, setUpdated] = useState(false);
     const history = useHistory();
-    const [deleted, setDeleted] = useState(false);
-    const [events, setEvents] = useState([]);
-    const [load, setLoad] = useState(true);
-    const [edit, setEdit] = useState(false);
-
+  
     let curStr = new Date().toLocaleString();
     let curArr = curStr.split(",");
     let curDate = curArr[0].split("/");
@@ -52,25 +48,45 @@ export default function EventsPage() {
     const [popOpen, setPopOpen] = useState(false);
     const regex = /^\d+(.\d{1,2})?$/;
 
-    let temp = [];
+    useEffect(() => {  
+        if(updated){
+            fireDb.ref("events/" + event_node)
+                .once("value", function(snapshot) {
+                    let oldData = snapshot.val();
+                    console.log("oldData in EditPage:", oldData);
 
-    useEffect(() => {
-            try{fireDb
-                    .ref("/events")
-                    .on("value", (snapshot) => {
-                        snapshot.forEach((snap) => {
-                            eventsByMonths.push(snap.val());
-                        });
-                        eventsByMonths.forEach((oneMonth) => {
-                            let monthEventKeys = Object.keys(oneMonth);
-                            monthEventKeys.forEach((eventKey) => {
-                                temp.push(oneMonth[eventKey]);
-                            })
-                        })
-                    });
-                setEvents(temp);
-            } catch (err) {console.log("Failed to retrieve events: " + err)}
-    }, [load, edit, deleted]);
+                    let oldStartHr = (oldData.startHour>12 ? (parseInt(oldData.startHour) - 12) : parseInt(oldData.startHour));
+                    let oldStartDon = (oldData.startHour>12 ? "PM" : "AM");
+
+                    let oldEndHr = (oldData.endHour>12 ? (parseInt(oldData.endHour) - 12) : parseInt(oldData.endHour));
+                    let oldEndDon = (oldData.endHour>12 ? "PM" : "AM");
+
+                    setSelectedName(oldData.name);
+                    
+                    setSelectedStartMonth(oldData.startMonth);
+                    setSelectedStartDay(oldData.startDay);
+                    setSelectedStartYear(oldData.startYear);
+                    setSelectedStartHour(oldStartHr);
+                    setSelectedStartMin(oldData.startMin);
+                    setSelectedStartDoN(oldStartDon);
+
+                    setSelectedEndMonth(oldData.endMonth);
+                    setSelectedEndDay(oldData.endDay);
+                    setSelectedEndYear(oldData.endYear);
+                    setSelectedEndHour(oldEndHr);
+                    setSelectedEndMin(oldData.endMin);
+                    setSelectedEndDoN(oldEndDon);
+
+                    setSelectedVacancy(oldData.vac);
+
+                    setSelectedColor(oldData.color);
+
+                    setSelectedDesc(oldData.desc);
+                }, function (errorObject) {
+                    console.log("Realtime DB read failed: " + errorObject.code);
+                });
+            }
+    }, [event_node])
 
     const handlePriceChange = (e) => {
         let typedPrice = e.target.value;
@@ -78,89 +94,7 @@ export default function EventsPage() {
         setPopOpen(!regex.test(typedPrice));
     }
 
-    const closeModal = () => {
-        setEdit(false);
-    }
-
-    const loadHandler = () => {
-        setLoad(!load);
-    }
-
-    function hexc(colorval) {
-        let parts = colorval.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-        delete(parts[0]);
-        for (var i = 1; i <= 3; ++i) {
-          parts[i] = parseInt(parts[i]).toString(16);
-          if (parts[i].length === 1) parts[i] = '0' + parts[i];
-        }
-        let color = parts.join('');
-        return color;
-    }
-
-    const editButtonHandler = (e) => {
-        let parent = e.target.parentElement.parentElement.children;
-
-        let name = parent[0].innerHTML;
-
-        let startMonth = parseInt(parent[1].children[1].childNodes[0].data) - 1;
-        let startDay = parent[1].children[1].childNodes[2].data;
-        let startYr = parent[1].children[1].childNodes[4].data;
-        let startHr = parseInt(parent[1].children[1].childNodes[6].data);
-        let startMin = parent[1].children[1].childNodes[8].data;
-        let startDon = parent[1].children[1].childNodes[10].data;
-
-        let endMonth = parseInt(parent[2].children[1].childNodes[0].data) - 1;
-        let endDay = parent[2].children[1].childNodes[2].data;
-        let endYr = parent[2].children[1].childNodes[4].data;
-        let endHr = parseInt(parent[1].children[1].childNodes[6].data);
-        let endMin = parent[2].children[1].childNodes[8].data;
-        let endDon = parent[2].children[1].childNodes[10].data;
-
-        let desc = parent[3].childNodes[1].data;
-
-        let vac = parent[5].children[0].innerHTML;
-
-        let cardColor = hexc(e.target.parentElement.parentElement.style.backgroundColor).toUpperCase();
-
-        setSelectedName(name);
-
-        setSelectedStartMonth(startMonth);
-        setSelectedStartDay(startDay);
-        setSelectedStartYear(startYr);
-        setSelectedStartHour(startHr);
-        setSelectedStartMin(startMin);
-        setSelectedStartDoN(startDon);
-        
-        setSelectedEndMonth(endMonth);
-        setSelectedEndDay(endDay);
-        setSelectedEndYear(endYr);
-        setSelectedEndHour(endHr);
-        setSelectedEndMin(endMin);
-        setSelectedEndDoN(endDon);
-
-        setSelectedVacancy(vac);
-        setSelectedColor(cardColor);
-        setSelectedDesc(desc);
-
-        let key = name + "_" + 
-                startMonth + "_" + 
-                startDay + "_" + 
-                startYr + "_" + 
-                startHr + ":" + 
-                startMin + startDon + "_" +
-                endMonth + "_" + 
-                endDay + "_" + 
-                endYr + "_" + 
-                endHr + ":" + 
-                endMin + endDon + "_" +
-                vac + "_" + 
-                cardColor + "_" + 
-                desc;
-
-        setEdit(true);
-    }
-
-    const editEventHandler = (e) => {
+    const handleEditEvent = (e) => {
         let startHr = selectedStartDoN==="AM" ? parseInt(selectedStartHour) : (parseInt(selectedStartHour) + 12);
         let endHr = selectedEndDoN==="AM" ? parseInt(selectedEndHour) : (parseInt(selectedEndHour) + 12);
 
@@ -169,21 +103,23 @@ export default function EventsPage() {
                 selectedStartDay + "_" + 
                 selectedStartYear + "_" + 
                 selectedStartHour + ":" + 
-                parseInt(selectedStartMin) + selectedStartDoN + "_" + 
+                selectedStartMin + selectedStartDoN + "_" + 
                 selectedEndMonth + "_" + 
                 selectedEndDay + "_" + 
                 selectedEndYear + "_" + 
                 selectedEndHour + ":" + 
-                parseInt(selectedEndMin) + selectedEndDoN + "_" +
+                selectedEndMin + selectedEndDoN + "_" +
                 selectedVacancy + "_" + 
                 selectedColor + "_" + 
                 selectedDesc;
-        
-        let editPrice = (price ? (parseFloat(price)) : price);
 
-        fireDb.ref("/events/" + e.target.id).set({
+        let query = fireDb.ref("/events/")
+                          .orderByChild("id")
+                          .equalTo(key);
+    
+        fireDb.ref("/events/" + event_node).set({
             id: key,
-            node: e.target.id,
+            node: event_node,
 
             name: selectedName,
     
@@ -205,119 +141,39 @@ export default function EventsPage() {
     
             desc: selectedDesc,
 
-            price: editPrice,
+            price: price,
           })
           .then(() => console.log('Event edited.'));
 
-        setEdit(false);
-    }
-
-    const deleteHandler = (e) => {
-        let parent = e.target.parentElement.parentElement.children;
-
-        let name = parent[0].innerHTML;
-
-        let startMonth = parseInt(parent[1].children[1].childNodes[0].data) - 1;
-        let startDay = parseInt(parent[1].children[1].childNodes[2].data);
-        let startYr = parseInt(parent[1].children[1].childNodes[4].data);
-        let startHr = parseInt(parent[1].children[1].childNodes[6].data);
-        let startMin = parseInt(parent[1].children[1].childNodes[8].data);
-        let startDon = parent[1].children[1].childNodes[10].data;
-
-        let endMonth = parseInt(parent[2].children[1].childNodes[0].data) - 1;
-        let endDay = parseInt(parent[2].children[1].childNodes[2].data);
-        let endYr = parseInt(parent[2].children[1].childNodes[4].data);
-        let endHr = parseInt(parent[2].children[1].childNodes[6].data);
-        let endMin = parseInt(parent[2].children[1].childNodes[8].data);
-        let endDon = parent[2].children[1].childNodes[10].data;
-
-        let desc = parent[3].childNodes[1].data;
-
-        let vac = parent[5].children[0].innerHTML;
-
-        let cardColor = hexc(e.target.parentElement.parentElement.style.backgroundColor).toUpperCase();
-
-        let key = name + "_" + 
-                startMonth + "_" + 
-                startDay + "_" + 
-                startYr + "_" + 
-                startHr + ":" + 
-                startMin + startDon + "_" +
-                endMonth + "_" + 
-                endDay + "_" + 
-                endYr + "_" + 
-                endHr + ":" + 
-                endMin + endDon + "_" +
-                vac + "_" + 
-                cardColor + "_" + 
-                desc;
-       
-        let query = fireDb.ref("/events/")
-                          .orderByChild("id")
-                          .equalTo(key);
-        query.once("value", function(snapshot) {
-            snapshot.forEach(function(child) {
-              child.ref.remove();
-            })
-        });
-        setDeleted(!deleted);
-    }
+          setUpdated(true);
+        //   history.push("eventdetails/");
+          
+    };
 
     return (
-        <>
         <div className="login">
             <Header></Header>
-            <div className="pageTitle">Event Details</div>
+            <div className="pageTitle">Add an Event</div>
             <div className="eventsCon">
-                {events.map(event => (
-                    <div 
-                        style={{ paddingBottom:'25px' }}
-                        key={event.title + event.startMonth + event.startDay + event.startYear + event.startHour + event.startMin + event.endMonth + event.endDay + event.endYear + event.endHour + event.endMin + event.vac + event.color + event.desc}>
-                        <div className="eventCard"
-                            id={event.node}
-                            style={{backgroundColor: `#${event.color}`, width:'60%', borderRadius: 15, marginLeft: 'auto', marginRight: 'auto', }}>
-                            <div className="eventTitle">{event.name}</div>
-                            <div className="eventStartTime">
-                                <em>Start time:</em> <span className="eventStartDet">{parseInt(event.startMonth) + 1}/{event.startDay}/{event.startYear} at {event.startHour>12 ? event.startHour - 12 : event.startHour}:{event.startMin<10 ? ("0" + event.startMin) : event.startMin} {event.startHour>12 ? "PM" : "AM"}</span>
-                            </div>
-                            <div className="eventEndTime"><em>End time:</em> <span>{parseInt(event.endMonth) + 1}/{event.endDay}/{event.endYear} at {event.endHour>12 ? event.endHour - 12 : event.endHour}:{event.endMin<10 ? ("0" + event.endMin) : event.endMin}  {event.endHour>12 ? "PM" : "AM"}</span>
-                            </div>
-                            <div className="eventDesc"><em>Description: </em>{event.desc}</div>
-                            <div className="eventPrice"><em>Price: </em>{event.price ? ("$" + event.price.toFixed(2))  : "N/A"}</div>
-                            {event.vac==="FULL" ? (<div className="eventVac" style={{ padding: 10, color: '#e66060' }}><strong>{event.vac}</strong></div>) : (<div className="eventVac" style={{ padding: 10 }}><strong>{event.vac}</strong></div>)}
-                            <div style={{ display: 'flex', justifyContent:'space-between' }}>
-                                <button
-                                    onClick={editButtonHandler} 
-                                    style={{ paddingLeft: '3%', paddingRight: '3%', paddingTop: '2%', paddingBottom: '2%', borderRadius: 30, border: 'none', backgroundColor: '#fcebb1' }}
-                                    >
-                                    Edit
-                                </button>
-                                <button 
-                                    style={{ paddingLeft: '3%', paddingRight: '3%', paddingTop: '2%', paddingBottom: '2%', borderRadius: 30, border: 'none', backgroundColor: '#fcb1b1' }}
-                                    onClick={deleteHandler}>
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                        <Modal show={edit} onHide={closeModal} backdrop="static">
-                            <Modal.Header closeButton>Edit Event</Modal.Header>
-                        <Modal.Body>
-            <div className="eventsCon">
-                    <div>Event title: <span style={{ color: 'red' }}>*</span></div>
-                    <div className="row">
-                        <input
-                            name="title"
-                            defaultValue={event.name}
-                            onChange={(e) => setSelectedName(e.target.value)}
-                            required
-                        ></input>
-                    </div>
-                    <div>Starting time: <span style={{ color: 'red' }}>*</span></div>
                 <div className="row">
+                    <span className="label">Event title: </span>
+                    <input
+                        className="title"
+                        name="title"
+                        value={selectedName}
+                        onChange={(e) => setSelectedName(e.target.value)}
+                        required
+                        style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}
+                    ></input>
+                </div>
+                <div className="row">
+                    <span className="label">Starting time: </span>
                     <form>
                         <select 
-                            defaultValue={event.startMonth}
-                            onChange={(input) => setSelectedStartMonth(input.target.value)}>
+                            className="time" 
+                            defaultValue={selectedStartMonth}
+                            onChange={(input) => setSelectedStartMonth(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={0}>Jan</option>
                             <option value={1}>Feb</option>
                             <option value={2}>Mar</option>
@@ -333,9 +189,11 @@ export default function EventsPage() {
                         </select>
                     </form>
                     <form>
-                        <select
-                            defaultValue={event.startDay} 
-                            onChange={(input) => setSelectedStartDay(input.target.value)}>
+                        <select 
+                            className="time" 
+                            defaultValue={selectedStartDay} 
+                            onChange={(input) => setSelectedStartDay(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={1}>1</option>
                             <option value={2}>2</option>
                             <option value={3}>3</option>
@@ -372,8 +230,10 @@ export default function EventsPage() {
                     <span>,</span>
                     <form>
                         <select 
-                            defaultValue={event.startYear} 
-                            onChange={(input) => setSelectedStartYear(input.target.value)}>
+                            className="time" 
+                            defaultValue={selectedStartYear} 
+                            onChange={(input) => setSelectedStartYear(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={years[0]}>{years[0]}</option>
                             <option value={years[1]}>{years[1]}</option>
                             <option value={years[2]}>{years[2]}</option>
@@ -385,8 +245,10 @@ export default function EventsPage() {
                     <span>,</span>
                     <form>
                     <select 
-                            defaultValue={event.startHour>12 ? (parseInt(event.startHour - 12)) : parseInt(event.startHour)}
-                            onChange={(input) => setSelectedStartHour(input.target.value)}>
+                            className="time" 
+                            defaultValue={selectedStartHour}
+                            onChange={(input) => setSelectedStartHour(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={1}>1</option>
                             <option value={2}>2</option>
                             <option value={3}>3</option>
@@ -404,8 +266,10 @@ export default function EventsPage() {
                     <span>:</span>
                     <form>
                         <select 
-                            defaultValue={event.startMin}
-                            onChange={(input) => setSelectedStartMin(input.target.value)}>
+                            className="time" 
+                            defaultValue={selectedStartMin}
+                            onChange={(input) => setSelectedStartMin(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={0}>00</option>
                             <option value={1}>01</option>
                             <option value={2}>02</option>
@@ -470,20 +334,24 @@ export default function EventsPage() {
                     </form>
                     <form>
                         <select 
-                            defaultValue={event.startHour>12 ? "PM" : "AM"}
-                            onChange={(input) => setSelectedStartDoN(input.target.value)}>
+                            className="time" 
+                            defaultValue={selectedStartDoN}
+                            onChange={(input) => setSelectedStartDoN(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value="AM">AM</option>
                             <option value="PM">PM</option>
                         </select>
                     </form>
                 </div>
                 
-                    <div>Ending time: <span style={{ color: 'red' }}>*</span></div>
                 <div className="row">
+                    <span className="label">Ending time: </span>
                     <form>
-                        <select
-                            defaultValue={event.endMonth}
-                            onChange={(input) => setSelectedEndMonth(input.target.value)}>
+                        <select 
+                            className="time" 
+                            defaultValue={selectedEndMonth}
+                            onChange={(input) => setSelectedEndMonth(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={0}>Jan</option>
                             <option value={1}>Feb</option>
                             <option value={2}>Mar</option>
@@ -499,9 +367,11 @@ export default function EventsPage() {
                         </select>
                     </form>
                     <form>
-                        <select  
-                            defaultValue={event.endDay} 
-                            onChange={(input) => setSelectedEndDay(input.target.value)}>
+                        <select 
+                            className="time" 
+                            defaultValue={selectedEndDay} 
+                            onChange={(input) => setSelectedEndDay(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={1}>1</option>
                             <option value={2}>2</option>
                             <option value={3}>3</option>
@@ -538,8 +408,10 @@ export default function EventsPage() {
                     <span>,</span>
                     <form>
                         <select 
-                            defaultValue={event.endYear} 
-                            onChange={(input) => setSelectedEndYear(input.target.value)}>
+                            className="time" 
+                            defaultValue={selectedEndYear} 
+                            onChange={(input) => setSelectedEndYear(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={years[0]}>{years[0]}</option>
                             <option value={years[1]}>{years[1]}</option>
                             <option value={years[2]}>{years[2]}</option>
@@ -551,8 +423,10 @@ export default function EventsPage() {
                     <span>,</span>
                     <form>
                         <select 
-                            defaultValue={event.endHour>12 ? (parseInt(event.endHour) - 12) : parseInt(event.endHour)}
-                            onChange={(input) => setSelectedEndHour(input.target.value)}>
+                            className="time" 
+                            defaultValue={selectedEndHour}
+                            onChange={(input) => setSelectedEndHour(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={1}>1</option>
                             <option value={2}>2</option>
                             <option value={3}>3</option>
@@ -570,8 +444,10 @@ export default function EventsPage() {
                     <span>:</span>
                     <form>
                         <select 
-                            defaultValue={event.endMin}
-                            onChange={(input) => setSelectedEndMin(input.target.value)}>
+                            className="time" 
+                            defaultValue={selectedEndMin}
+                            onChange={(input) => setSelectedEndMin(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={0}>00</option>
                             <option value={1}>01</option>
                             <option value={2}>02</option>
@@ -636,32 +512,38 @@ export default function EventsPage() {
                     </form>
                     <form>
                         <select 
-                            defaultValue={event.endHour>12 ? "PM" : "AM"}
-                            onChange={(input) => setSelectedEndDoN(input.target.value)}>
+                            className="time" 
+                            defaultValue={selectedEndDoN}
+                            onChange={(input) => setSelectedEndDoN(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value="AM">AM</option>
                             <option value="PM">PM</option>
                         </select>
                     </form>
                 </div>
 
-                    <div>Vacancy: <span style={{ color: 'red' }}>*</span></div>
                 <div className="row">
+                    <span className="label">Vacancy: </span>
                     <form>
                         <select 
-                            defaultValue={event.vac}
-                            onChange={(input) => setSelectedVacancy(input.target.value)}>
+                            className="time" 
+                            defaultValue={selectedVacancy}
+                            onChange={(input) => setSelectedVacancy(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value="NOT FULL">Not full</option>
                             <option value="FULL">Full</option>
                         </select>
                     </form>
                 </div>
 
-                    <div>Color: <span style={{ color: 'red' }}>*</span></div>
-                    <div className="row">
+                <div className="row">
+                    <span className="label">Color: </span>
                     <form>
                         <select 
-                            defaultValue={event.color}
-                            onChange={(input) => setSelectedColor(input.target.value)}>
+                            className="time" 
+                            defaultValue={selectedColor}
+                            onChange={(input) => setSelectedColor(input.target.value)}
+                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value="5987E7">Blue (default)</option>
                             <option value="8CE5EB">Turquoise</option>
                             <option value="FFD076">Golden</option>
@@ -669,49 +551,53 @@ export default function EventsPage() {
                             <option value="E6A8ED">Pink</option>
                         </select>
                     </form>
-                    </div>
+                </div>
 
-                    <div>Description: <span style={{ color: 'red' }}>*</span></div>
-                    <div className="row">
+                <div className="row">
+                    <span className="label">Description: </span>
                     <textarea 
+                        className="desc" 
                         rows="5" 
                         cols="40"
-                        defaultValue={event.desc}
-                        onChange={(input) => setSelectedDesc(input.target.value)}>
+                        defaultValue={selectedDesc}
+                        onChange={(input) => setSelectedDesc(input.target.value)}
+                        style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                     </textarea>
-                    </div>
+                </div>
 
-                    <div>Price (optional): </div>
-                    <div className="row">
-                    <span>$ </span>
+                <div className="row" style={{ paddingBottom: 50 }}>
+                    <span className="label">Price (optional): </span>
+                    <span style={{ fontSize: 30 }}>$</span>
                     <input
+                        className="price"
+                        id="price"
                         name="price"
-                        defaultValue={event.price}
+                        value={price}
                         onChange={handlePriceChange}
+                        style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}
                     ></input>
-                    </div>
                 </div>
-                <div style={{ color: 'red', paddingTop: 20, paddingBottom: 20 }}>* Required fields</div>
-                <div style={{ display: 'flex', justifyContent: 'center' }} onClick={editEventHandler}>
-                    <Button id={event.node}>
-                        Submit Edits
-                    </Button>
-                </div>
-                            </Modal.Body>
-                        </Modal>
-                    </div>
-                ))}
+                
+                <Tooltip
+                    isOpen={popOpen}
+                    placement="bottom"
+                    text="Bottom"
+                    target="price"
+                    style={{ padding: 10, backgroundColor: '#c7e3ed', border: "1px solid black",WebkitBorderRadius: '10px', position: 'relative' }}>
+                    Price must be in this form:<br />
+                    <em>Integer</em> OR <em>Integer</em>.XX
+                </Tooltip>
             </div>
-            <div className="eventsButtonCon" style={{ display: 'flex', justifyContent: 'center',  }}>
-                <Link to="addevent">
-                    <button className="loginButton" style={{ backgroundColor: '#a3e3aa', }}>Add Event</button>
+            <div className="loginButtonPageCon">
+                <Link to="eventdetails">
+                    <button 
+                        className="loginButton" 
+                        onClick={handleEditEvent} 
+                        style={{ backgroundColor: `#${selectedColor}` }}>
+                        Submit Editted Event
+                    </button>
                 </Link>
-                <button className="loginButton" style={{ backgroundColor: '#4880b8', marginLeft: 20 }} onClick={loadHandler}>
-                    Load Events
-                </button>
             </div>
         </div>
-        
-        </>
     )
 }
