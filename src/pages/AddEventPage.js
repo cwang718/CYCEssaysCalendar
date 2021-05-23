@@ -70,8 +70,11 @@ export default function AddEventPage() {
                 selectedDesc;
 
         let addPrice = (price ? (parseFloat(price)) : price);
-    
-        const newReference = fireDb.ref('/events')
+        let dbRefSub = String(parseInt(selectedStartMonth)+1) + "-" + selectedStartYear;
+        //let dbRefSub = selectedStartMonth + "-" + selectedStartYear;
+        //console.log(dbRefSub);
+
+        const newReference = fireDb.ref(`/events/${dbRefSub}`)
                                    .push();
         newReference.set({
             id: key,
@@ -123,7 +126,7 @@ export default function AddEventPage() {
                     <form>
                         <select 
                             className="time" 
-                            defaultValue={parseInt(curDate[0]) - 1}
+                            defaultValue={parseInt(curDate[0] - 1)}
                             onChange={(input) => setSelectedStartMonth(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={0}>Jan</option>
@@ -301,7 +304,7 @@ export default function AddEventPage() {
                     <form>
                         <select 
                             className="time" 
-                            defaultValue={parseInt(curDate[0]) - 1}
+                            defaultValue={parseInt(curDate[0] - 1)}
                             onChange={(input) => setSelectedEndMonth(input.target.value)}
                             style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
                             <option value={0}>Jan</option>
@@ -542,7 +545,7 @@ export default function AddEventPage() {
             <div className="loginButtonPageCon">
                 <Link to="eventdetails">
                     <button 
-                        className="loginButton" 
+                        className="loginButton addEventButton" 
                         onClick={handleNewEvent} 
                         style={{ backgroundColor: `#${selectedColor}` }}>
                         Add Event

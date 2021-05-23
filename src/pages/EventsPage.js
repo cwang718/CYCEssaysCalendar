@@ -25,7 +25,7 @@ export default function EventsPage() {
 
     const [selectedName, setSelectedName] = useState("");
 
-    let curMonth = parseInt(curDate[0]) - 1;
+    let curMonth = parseInt(curDate[0] - 1);
 
     const [selectedStartMonth, setSelectedStartMonth] = useState(curMonth);
     const [selectedStartDay, setSelectedStartDay] = useState(curDate[1]);
@@ -47,6 +47,8 @@ export default function EventsPage() {
 
     const [selectedDesc, setSelectedDesc] = useState("");
 
+    const [selectedLoadMonth, setSelectedLoadMonth] = useState(curMonth);
+
     const [price, setPrice] = useState("");
     const [popOpen, setPopOpen] = useState(false);
     const regex = /^\d+(.\d{1,2})?$/;
@@ -54,9 +56,11 @@ export default function EventsPage() {
     let temp = [];
 
     useEffect(() => {
+            let loadDate = String(parseInt(selectedLoadMonth) + 1) + "-" + curDate[2];
+            //let loadDate = selectedLoadMonth + "-" + curDate[2];
             try{
                 fireDb
-                    .ref("/events")
+                    .ref(`/events/${loadDate}`)
                     .on("value", (snapshot) => {
                         snapshot.forEach((snap) => {
                             temp.push(snap.val());
@@ -262,6 +266,11 @@ export default function EventsPage() {
         <div className="login">
             <Header></Header>
             <div className="pageTitle">Event Details</div>
+            <div className="eventsButtonCon" style={{ display: 'flex', justifyContent: 'center',  }}>
+                <Link to="addevent">
+                    <button className="loginButton" style={{ backgroundColor: '#a3e3aa', }}>Add Event</button>
+                </Link>
+            </div>
             <div className="eventsCon">
                 {events.map(event => (
                     <div 
@@ -697,9 +706,24 @@ export default function EventsPage() {
                 ))}
             </div>
             <div className="eventsButtonCon" style={{ display: 'flex', justifyContent: 'center',  }}>
-                <Link to="addevent">
-                    <button className="loginButton" style={{ backgroundColor: '#a3e3aa', }}>Add Event</button>
-                </Link>
+                <form>
+                    <select 
+                        defaultValue={curMonth}
+                        onChange={(input) => setSelectedLoadMonth(input.target.value)}>
+                            <option value={0}>Jan</option>
+                            <option value={1}>Feb</option>
+                            <option value={2}>Mar</option>
+                            <option value={3}>Apr</option>
+                            <option value={4}>May</option>
+                            <option value={5}>Jun</option>
+                            <option value={6}>Jul</option>
+                            <option value={7}>Aug</option>
+                            <option value={8}>Sep</option>
+                            <option value={9}>Oct</option>
+                            <option value={10}>Nov</option>
+                            <option value={11}>Dec</option>
+                    </select>
+                </form>
                 <button className="loginButton" style={{ backgroundColor: '#4880b8', marginLeft: 20 }} onClick={loadHandler}>
                     Load Events
                 </button>
