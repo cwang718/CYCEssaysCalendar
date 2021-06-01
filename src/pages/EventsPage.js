@@ -263,31 +263,33 @@ export default function EventsPage() {
 
     return (
         <>
-        <div className="login">
+        <div className="layout">
             <Header></Header>
-            <div className="pageTitle">Event Details</div>
+            <div className="pageTitle eventTitle">Event Details</div>
+            <hr></hr>
             <div className="eventsButtonCon" style={{ display: 'flex', justifyContent: 'center',  }}>
                 <Link to="addevent">
                     <button className="loginButton" style={{ backgroundColor: '#a3e3aa', }}>Add Event</button>
                 </Link>
             </div>
-            <div className="eventsCon">
+            <div className="eventsCon cormorant">
                 {events.map(event => (
                     <div 
                         style={{ paddingBottom:'25px' }}
                         key={event.title + event.startMonth + event.startDay + event.startYear + event.startHour + event.startMin + event.endMonth + event.endDay + event.endYear + event.endHour + event.endMin + event.vac + event.color + event.desc}>
-                        <div className="eventCard"
+                        <div className="eventCard shadow"
                             id={event.node}
-                            style={{backgroundColor: `#${event.color}`, width:'60%', borderRadius: 15, marginLeft: 'auto', marginRight: 'auto', }}>
+                            style={{backgroundColor: `#${event.color}`, width:'60%', borderRadius: 10, marginLeft: 'auto', marginRight: 'auto', }}>
                             <div className="eventTitle">{event.name}</div>
-                            <div className="eventStartTime">
-                                <em>Start time:</em> <span className="eventStartDet">{parseInt(event.startMonth) + 1}/{event.startDay}/{event.startYear} at {event.startHour>12 ? event.startHour - 12 : event.startHour}:{event.startMin<10 ? ("0" + event.startMin) : event.startMin} {event.startHour>12 ? "PM" : "AM"}</span>
+                            <hr></hr>
+                            <div className="eventStartTime eventInfo">
+                                <em> Start time:</em> <span className="eventStartDet">{parseInt(event.startMonth) + 1}/{event.startDay}/{event.startYear} at {event.startHour>12 ? event.startHour - 12 : event.startHour}:{event.startMin<10 ? ("0" + event.startMin) : event.startMin} {event.startHour>12 ? "PM" : "AM"}</span>
                             </div>
-                            <div className="eventEndTime"><em>End time:</em> <span>{parseInt(event.endMonth) + 1}/{event.endDay}/{event.endYear} at {event.endHour>12 ? event.endHour - 12 : event.endHour}:{event.endMin<10 ? ("0" + event.endMin) : event.endMin}  {event.endHour>12 ? "PM" : "AM"}</span>
+                            <div className="eventEndTime eventInfo"><em>End time:</em> <span>{parseInt(event.endMonth) + 1}/{event.endDay}/{event.endYear} at {event.endHour>12 ? event.endHour - 12 : event.endHour}:{event.endMin<10 ? ("0" + event.endMin) : event.endMin}  {event.endHour>12 ? "PM" : "AM"}</span>
                             </div>
-                            <div className="eventDesc"><em>Description: </em>{event.desc}</div>
-                            <div className="eventPrice"><em>Price: </em>{event.price ? ("$" + event.price.toFixed(2))  : "N/A"}</div>
-                            {event.vac==="FULL" ? (<div className="eventVac" style={{ padding: 10, color: '#e66060' }}><strong>{event.vac}</strong></div>) : (<div className="eventVac" style={{ padding: 10 }}><strong>{event.vac}</strong></div>)}
+                            <div className="eventDesc eventInfo"><em>Description: </em>{event.desc}</div>
+                            <div className="eventPrice eventInfo"><em>Price: </em>{event.price ? ("$" + event.price.toFixed(2))  : "N/A"}</div>
+                            {event.vac==="FULL" ? (<div className="eventVac" style={{ padding: 10, color: '#e66060'}}><strong>{event.vac}</strong></div>) : (<div className="eventVac" style={{ padding: 10 }}><strong>{event.vac}</strong></div>)}
                             <div style={{ display: 'flex', justifyContent:'space-between' }}>
                                 <button
                                     onClick={editButtonHandler} 
@@ -708,6 +710,7 @@ export default function EventsPage() {
             <div className="eventsButtonCon" style={{ display: 'flex', justifyContent: 'center',  }}>
                 <form>
                     <select 
+                        className="custom-select"
                         defaultValue={curMonth}
                         onChange={(input) => setSelectedLoadMonth(input.target.value)}>
                             <option value={0}>Jan</option>

@@ -106,8 +106,9 @@ export default function AddEventPage() {
     };
 
     return (
-        <div className="login">
+        <div className="layout cormorant">
             <Header></Header>
+            <div className="">
             <div className="pageTitle">Add an Event</div>
             <div className="eventsCon">
                 <div className="row">
@@ -553,5 +554,6 @@ export default function AddEventPage() {
                 </Link>
             </div>
         </div>
+    </div>
     )
 }

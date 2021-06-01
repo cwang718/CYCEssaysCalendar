@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,700;1,400&display=swap');
+
 .App {
-  background-color: #97b4d1;
+  background-color: #eeeeee;
   font-family: 'Ibarra Real Nova, serif';
   color: #21243b;
   min-height: 100vh;
@@ -33,17 +35,29 @@ button {
   font-size: 20px;
 }
 
+.cormorant {
+  font-family: 'Cormorant', serif;
+}
+
 .eventCard {
   padding: 20px;
+  
 }
 
 .eventTitle {
-  font-size: 30px;
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.eventInfo {
+  font-size: 25px;
 }
 
 .header {
   text-align: left;
   display: flex;
+  background-color: #0c0044;
+  margin-bottom: 20px;
 }
 
 .headerLogo {
@@ -66,7 +80,7 @@ button {
   padding-bottom: 20px;
 }
 
-.login {
+.layout {
   text-align: center;
   align-items: center;
   justify-content: center;
@@ -79,6 +93,7 @@ button {
   padding-left: 20px;
   padding-right: 20px;
   border-radius: 25px;
+  font-family: 'Cormorant', serif;
 }
 
 .loginButtonCon {

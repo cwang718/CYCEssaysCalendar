@@ -18,7 +18,7 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="login">
+        <div className="layout">
            <img className="logo" src="tws.png" alt="logo"/>
            <div className="title">The Write Calendar</div>
            <div className="subtitle">Create your calendar events</div>

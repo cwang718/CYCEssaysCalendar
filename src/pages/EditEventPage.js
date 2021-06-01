@@ -151,7 +151,7 @@ export default function EditEventPage() {
     };
 
     return (
-        <div className="login">
+        <div className="layout">
             <Header></Header>
             <div className="pageTitle">Add an Event</div>
             <div className="eventsCon">
