@@ -35,6 +35,13 @@ button {
   font-size: 20px;
 }
 
+.drop {
+  border-radius: 8px;
+  border: 1px solid black; 
+  padding: 5px;
+  font-size: 20px !important;
+}
+
 .cormorant {
   font-family: 'Cormorant', serif;
 }
@@ -57,7 +64,6 @@ button {
   text-align: left;
   display: flex;
   background-color: #0c0044;
-  margin-bottom: 20px;
 }
 
 .headerLogo {
@@ -107,6 +113,7 @@ button {
 .pageTitle {
   font-size: 30px;
   padding-bottom: 30px;
+  padding-top: 20px;
 }
 
 .row {
@@ -134,4 +141,10 @@ button {
   margin-left: -5px;
   border-bottom-color: #000000; /* black */
   border-width: 0 5px 5px;
+}
+
+.outer {
+  background-color: white;
+  margin: 20px 20% 0;
+  border-radius: 15px;
 }

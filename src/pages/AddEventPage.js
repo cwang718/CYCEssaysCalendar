@@ -108,28 +108,26 @@ export default function AddEventPage() {
     return (
         <div className="layout cormorant">
             <Header></Header>
-            <div className="">
+            <div className="outer">
             <div className="pageTitle">Add an Event</div>
             <div className="eventsCon">
                 <div className="row">
                     <span className="label">Event title: </span>
                     <input
-                        className="title"
+                        className="title drop"
                         name="title"
                         value={selectedName}
                         onChange={(e) => setSelectedName(e.target.value)}
                         required
-                        style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}
                     ></input>
                 </div>
                 <div className="row">
                     <span className="label">Starting time: </span>
                     <form>
                         <select 
-                            className="time" 
+                            className="time drop" 
                             defaultValue={parseInt(curDate[0] - 1)}
-                            onChange={(input) => setSelectedStartMonth(input.target.value)}
-                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            onChange={(input) => setSelectedStartMonth(input.target.value)}>
                             <option value={0}>Jan</option>
                             <option value={1}>Feb</option>
                             <option value={2}>Mar</option>
@@ -146,10 +144,9 @@ export default function AddEventPage() {
                     </form>
                     <form>
                         <select 
-                            className="time" 
+                            className="time drop" 
                             defaultValue={curDate[1]} 
-                            onChange={(input) => setSelectedStartDay(input.target.value)}
-                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            onChange={(input) => setSelectedStartDay(input.target.value)}>
                             <option value={1}>1</option>
                             <option value={2}>2</option>
                             <option value={3}>3</option>
@@ -186,10 +183,9 @@ export default function AddEventPage() {
                     <span>,</span>
                     <form>
                         <select 
-                            className="time" 
+                            className="time drop" 
                             defaultValue={parseInt(curDate[2])} 
-                            onChange={(input) => setSelectedStartYear(input.target.value)}
-                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            onChange={(input) => setSelectedStartYear(input.target.value)}>
                             <option value={years[0]}>{years[0]}</option>
                             <option value={years[1]}>{years[1]}</option>
                             <option value={years[2]}>{years[2]}</option>
@@ -201,10 +197,9 @@ export default function AddEventPage() {
                     <span>,</span>
                     <form>
                     <select 
-                            className="time" 
+                            className="time drop" 
                             defaultValue={curTime[0]}
-                            onChange={(input) => setSelectedStartHour(input.target.value)}
-                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            onChange={(input) => setSelectedStartHour(input.target.value)}>
                             <option value={1}>1</option>
                             <option value={2}>2</option>
                             <option value={3}>3</option>
@@ -222,10 +217,9 @@ export default function AddEventPage() {
                     <span>:</span>
                     <form>
                         <select 
-                            className="time" 
+                            className="time drop" 
                             defaultValue={curTime[1]}
-                            onChange={(input) => setSelectedStartMin(input.target.value)}
-                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            onChange={(input) => setSelectedStartMin(input.target.value)}>
                             <option value={0}>00</option>
                             <option value={1}>01</option>
                             <option value={2}>02</option>
@@ -290,10 +284,9 @@ export default function AddEventPage() {
                     </form>
                     <form>
                         <select 
-                            className="time" 
+                            className="time drop" 
                             defaultValue={curDoN}
-                            onChange={(input) => setSelectedStartDoN(input.target.value)}
-                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            onChange={(input) => setSelectedStartDoN(input.target.value)}>
                             <option value="AM">AM</option>
                             <option value="PM">PM</option>
                         </select>
@@ -304,10 +297,9 @@ export default function AddEventPage() {
                     <span className="label">Ending time: </span>
                     <form>
                         <select 
-                            className="time" 
+                            className="time drop" 
                             defaultValue={parseInt(curDate[0] - 1)}
-                            onChange={(input) => setSelectedEndMonth(input.target.value)}
-                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            onChange={(input) => setSelectedEndMonth(input.target.value)}>
                             <option value={0}>Jan</option>
                             <option value={1}>Feb</option>
                             <option value={2}>Mar</option>
@@ -324,10 +316,9 @@ export default function AddEventPage() {
                     </form>
                     <form>
                         <select 
-                            className="time" 
+                            className="time drop" 
                             defaultValue={curDate[1]} 
-                            onChange={(input) => setSelectedEndDay(input.target.value)}
-                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            onChange={(input) => setSelectedEndDay(input.target.value)}>
                             <option value={1}>1</option>
                             <option value={2}>2</option>
                             <option value={3}>3</option>
@@ -364,10 +355,9 @@ export default function AddEventPage() {
                     <span>,</span>
                     <form>
                         <select 
-                            className="time" 
+                            className="time drop" 
                             defaultValue={parseInt(curDate[2])} 
-                            onChange={(input) => setSelectedEndYear(input.target.value)}
-                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            onChange={(input) => setSelectedEndYear(input.target.value)}>
                             <option value={years[0]}>{years[0]}</option>
                             <option value={years[1]}>{years[1]}</option>
                             <option value={years[2]}>{years[2]}</option>
@@ -379,10 +369,9 @@ export default function AddEventPage() {
                     <span>,</span>
                     <form>
                         <select 
-                            className="time" 
+                            className="time drop" 
                             defaultValue={curTime[0]}
-                            onChange={(input) => setSelectedEndHour(input.target.value)}
-                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            onChange={(input) => setSelectedEndHour(input.target.value)}>
                             <option value={1}>1</option>
                             <option value={2}>2</option>
                             <option value={3}>3</option>
@@ -400,10 +389,9 @@ export default function AddEventPage() {
                     <span>:</span>
                     <form>
                         <select 
-                            className="time" 
+                            className="time drop" 
                             defaultValue={curTime[1]}
-                            onChange={(input) => setSelectedEndMin(input.target.value)}
-                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            onChange={(input) => setSelectedEndMin(input.target.value)}>
                             <option value={0}>00</option>
                             <option value={1}>01</option>
                             <option value={2}>02</option>
@@ -468,10 +456,9 @@ export default function AddEventPage() {
                     </form>
                     <form>
                         <select 
-                            className="time" 
+                            className="time drop" 
                             defaultValue={curDoN}
-                            onChange={(input) => setSelectedEndDoN(input.target.value)}
-                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            onChange={(input) => setSelectedEndDoN(input.target.value)}>
                             <option value="AM">AM</option>
                             <option value="PM">PM</option>
                         </select>
@@ -482,10 +469,9 @@ export default function AddEventPage() {
                     <span className="label">Vacancy: </span>
                     <form>
                         <select 
-                            className="time" 
+                            className="time drop" 
                             defaultValue={selectedVacancy}
-                            onChange={(input) => setSelectedVacancy(input.target.value)}
-                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            onChange={(input) => setSelectedVacancy(input.target.value)}>
                             <option value="NOT FULL">Not full</option>
                             <option value="FULL">Full</option>
                         </select>
@@ -496,10 +482,9 @@ export default function AddEventPage() {
                     <span className="label">Color: </span>
                     <form>
                         <select 
-                            className="time" 
+                            className="time drop" 
                             defaultValue="5987E7"
-                            onChange={(input) => setSelectedColor(input.target.value)}
-                            style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                            onChange={(input) => setSelectedColor(input.target.value)}>
                             <option value="5987E7">Blue (default)</option>
                             <option value="8CE5EB">Turquoise</option>
                             <option value="FFD076">Golden</option>
@@ -512,11 +497,10 @@ export default function AddEventPage() {
                 <div className="row">
                     <span className="label">Description: </span>
                     <textarea 
-                        className="desc" 
+                        className="desc drop" 
                         rows="5" 
                         cols="40"
-                        onChange={(input) => setSelectedDesc(input.target.value)}
-                        style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}>
+                        onChange={(input) => setSelectedDesc(input.target.value)}>
                     </textarea>
                 </div>
 
@@ -524,12 +508,11 @@ export default function AddEventPage() {
                     <span className="label">Price (optional): </span>
                     <span style={{ fontSize: 30 }}>$</span>
                     <input
-                        className="price"
+                        className="price drop"
                         id="price"
                         name="price"
                         value={price}
                         onChange={handlePriceChange}
-                        style={{ borderRadius: 15, border:'2px solid black', padding: 5 }}
                     ></input>
                 </div>
                 
